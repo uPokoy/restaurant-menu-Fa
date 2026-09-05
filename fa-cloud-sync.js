@@ -1,4 +1,4 @@
-/* FA_CLOUD_SYNC_V15_DIRECT_REST */
+/* FA_CLOUD_SYNC_V16_FIX_400 */
 (function(){
   'use strict';
 
@@ -29,9 +29,11 @@
   async function request(method,body){
     const c=new AbortController(); const timer=setTimeout(()=>c.abort(),REQUEST_TIMEOUT_MS);
     const opt={method,cache:'no-store',signal:c.signal,headers:{apikey:KEY,Authorization:'Bearer '+KEY,Accept:'application/json'}};
-    if(method==='POST'){opt.headers['Content-Type']='application/json';opt.headers['Prefer']='resolution=merge-duplicates,return=representation';opt.body=JSON.stringify(body);}
+    if(method==='POST'){opt.headers['Content-Type']='application/json';opt.headers['Prefer']='resolution=merge-duplicates,return=representation';}
+    if(method==='POST') opt.body=JSON.stringify(body);
     try{
-      const url=method==='GET'?API+'?id=eq.main&select=id,data,updated_at&t='+Date.now():API+'?on_conflict=id';
+      // Не добавляем произвольные query-параметры: PostgREST отвечает 400 на неизвестный параметр t.
+      const url=method==='GET'?API+'?id=eq.main&select=id,data,updated_at':API+'?on_conflict=id';
       const r=await fetch(url,opt); const text=await r.text(); let json=null; try{json=text?JSON.parse(text):null}catch(e){}
       return {ok:r.ok,status:r.status,text,json};
     }catch(e){return {ok:false,status:0,text:e&&e.name==='AbortError'?'timeout':String(e),json:null};}
