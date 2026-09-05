@@ -5,7 +5,7 @@
   const API='https://jrpialhwbliicbsmzmvb.supabase.co/functions/v1/menu-sync';
   const DIRTY_KEY='restaurantCloudSyncV13Dirty';
   const DEVICE_KEY='restaurantCloudSyncV13Device';
-  const POLL_MS=3000;
+  const POLL_MS=5000;
   const SAVE_DEBOUNCE_MS=700;
   const REQUEST_TIMEOUT_MS=8000;
 
@@ -30,21 +30,21 @@
   }
   async function request(method,body){
     const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),REQUEST_TIMEOUT_MS);
+    const timer=setTimeout(()=>controller.abort(),REQUEST_TIMEOUT_MS);
+    const options={method,cache:'no-store',signal:controller.signal};
+    if(method==='POST'){
+      options.headers={'Content-Type':'application/json'};
+      options.body=JSON.stringify(body);
+    }
     try{
-      const options={method,cache:'no-store',signal:controller.signal};
-      if(method==='POST'){
-        options.headers={'Content-Type':'application/json'};
-        options.body=JSON.stringify(body);
-      }
       const url=method==='GET'?API+'?t='+Date.now():API;
       const r=await fetch(url,options);
-      const text=await r.text();let json=null;try{json=text?JSON.parse(text):null}catch(e){}
+      const text=await r.text();
+      let json=null;try{json=text?JSON.parse(text):null}catch(e){}
       return {ok:r.ok,status:r.status,text,json};
     }catch(error){
-      const message=error&&error.name==='AbortError'?'timeout':String(error);
-      return {ok:false,status:0,text:message,json:null};
-    }finally{clearTimeout(timeout);}
+      return {ok:false,status:0,text:error?.name==='AbortError'?'timeout':String(error),json:null};
+    }finally{clearTimeout(timer);}
   }
   function redraw(){
     try{renderNav()}catch(e){} try{fillCats()}catch(e){} try{drawMenu('all')}catch(e){} try{drawAdmin()}catch(e){} try{updateCartBadge()}catch(e){}
@@ -58,9 +58,9 @@
   }
   async function readRemote(){
     const r=await request('GET');
-    if(!r.ok){setStatus('🔴 Ошибка синхронизации','error');console.warn('FA sync GET failed',r.status,r.text);return null;}
+    if(!r.ok){console.warn('FA sync GET failed',r.status,r.text);return null;}
     const rows=Array.isArray(r.json)?r.json:[], row=rows[0];
-    if(!row||!row.data||!Array.isArray(row.data.cats)||!Array.isArray(row.data.dishes)){setStatus('🔴 Ошибка данных','error');return null;}
+    if(!row||!row.data||!Array.isArray(row.data.cats)||!Array.isArray(row.data.dishes)){console.warn('FA sync invalid cloud data',r.text);return null;}
     const state={cats:row.data.cats,dishes:row.data.dishes};
     return {state,fingerprint:fingerprint(state),updatedAt:Date.parse(row.updated_at||'')||0};
   }
@@ -70,7 +70,7 @@
     uploading=true;setStatus('🟡 Сохранение в облако...','saving');
     try{
       const r=await request('POST',{id:'main',data:state,updated_at:new Date().toISOString()});
-      if(!r.ok){setDirty(true);setStatus('🔴 Ошибка сохранения','error');console.warn('FA sync POST failed',r.status,r.text);return false;}
+      if(!r.ok){setDirty(true);setStatus('🟠 Облако недоступно — данные сохранены на устройстве','offline');console.warn('FA sync POST failed',r.status,r.text);return false;}
       const row=Array.isArray(r.json)?r.json[0]:null, serverTime=Date.parse(row?.updated_at||'')||Date.now();
       lastCloud=fp;lastCloudTime=serverTime;
       const currentFp=fingerprint(getState());
@@ -89,18 +89,26 @@
     finally{applying=false;}
   }
   async function initial(){
-    setStatus('🟡 Подключение к облаку...','loading');const remote=await readRemote();
-    if(remote){lastCloud=remote.fingerprint;lastCloudTime=remote.updatedAt;const local=getState(),localFp=fingerprint(local);
+    setStatus('🟡 Подключение к облаку...','loading');
+    const remote=await readRemote();
+    if(remote){
+      lastCloud=remote.fingerprint;lastCloudTime=remote.updatedAt;
+      const local=getState(),localFp=fingerprint(local);
       if(remote.fingerprint!==localFp){applying=true;try{if(replaceState(remote.state)){saveLocal(remote.state);lastState=remote.fingerprint;redraw();}}finally{applying=false;}}
-      else lastState=localFp;setDirty(false);setStatus('🟢 Синхронизировано','ok');
-    }else lastState=fingerprint(getState());
+      else lastState=localFp;
+      setDirty(false);setStatus('🟢 Синхронизировано','ok');
+    }else{
+      lastState=fingerprint(getState());
+      setStatus('🟠 Облако недоступно — работаем с локальными данными','offline');
+    }
     ready=true;
   }
   function scheduleUpload(){
     if(!ready||applying||uploading)return;
     const state=getState(),fp=fingerprint(state);if(!state||!fp||fp===lastState)return;
     if(dirty)return;
-    setDirty(true);setStatus('🟡 Есть изменения...','dirty');clearTimeout(saveTimer);saveTimer=setTimeout(()=>{saveTimer=0;upload('local-change')},SAVE_DEBOUNCE_MS);
+    setDirty(true);setStatus('🟡 Есть изменения...','dirty');
+    clearTimeout(saveTimer);saveTimer=setTimeout(()=>{saveTimer=0;upload('local-change')},SAVE_DEBOUNCE_MS);
   }
   async function poll(){
     if(!ready||applying||uploading||dirty)return;
@@ -116,8 +124,9 @@
   function install(){
     let valid=false;try{valid=Array.isArray(cats)&&Array.isArray(dishes)}catch(e){}
     if(!valid){setTimeout(install,250);return;}
-    installChannel();initial().catch(e=>{console.warn('FA sync V13 initial error',e);ready=true;lastState=fingerprint(getState());setStatus('🔴 Ошибка синхронизации','error')});
-    setInterval(()=>{if(!ready||applying||uploading)return;scheduleUpload()},500);
+    installChannel();
+    initial().catch(e=>{console.warn('FA sync V13 initial error',e);ready=true;lastState=fingerprint(getState());setStatus('🟠 Облако недоступно — работаем с локальными данными','offline')});
+    setInterval(()=>{if(!ready||applying||uploading)return;scheduleUpload()},1000);
     setInterval(poll,POLL_MS);
     document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!dirty&&!uploading)poll()});
     window.addEventListener('focus',()=>{if(!dirty&&!uploading)poll()});
