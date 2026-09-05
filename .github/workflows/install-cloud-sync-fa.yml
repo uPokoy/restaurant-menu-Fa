@@ -1,0 +1,105 @@
+name: Install Supabase cloud sync
+on:
+  push:
+    paths:
+      - 'FA_SYNC_TRIGGER.txt'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install sync
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          marker='<!-- FA_CLOUD_SYNC_V1 -->'
+          if marker in s:
+              print('already installed')
+              raise SystemExit(0)
+          block=r'''<script>
+/* <!-- FA_CLOUD_SYNC_V1 --> */
+(function(){
+  const API='https://jrpialhwbliicbsmzmvb.supabase.co/functions/v1/menu-sync';
+  const LOCAL_TS='restaurantMenuCloudUpdatedAtFA';
+  let applying=false;
+  function localTs(){return Number(localStorage.getItem(LOCAL_TS)||0)}
+  function setLocalTs(t){try{localStorage.setItem(LOCAL_TS,String(t))}catch(e){}}
+  function snapshot(){
+    return {id:'main',data:{cats:Array.isArray(window.cats)?window.cats:[],dishes:Array.isArray(window.dishes)?window.dishes:[]},updated_at:new Date().toISOString()};
+  }
+  async function upload(){
+    if(applying||!Array.isArray(window.dishes)||!Array.isArray(window.cats))return;
+    const payload=snapshot();
+    try{
+      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      if(r.ok)setLocalTs(Date.parse(payload.updated_at));
+    }catch(e){console.warn('Cloud sync upload failed',e)}
+  }
+  async function download(){
+    try{
+      const r=await fetch(API,{cache:'no-store'});
+      if(!r.ok)return;
+      const rows=await r.json();
+      const row=Array.isArray(rows)?rows[0]:null;
+      if(!row||!row.data||!Array.isArray(row.data.cats)||!Array.isArray(row.data.dishes))return;
+      const remoteTs=Date.parse(row.updated_at||'')||0;
+      const local=localTs();
+      if(remoteTs<=local)return;
+      applying=true;
+      window.cats=row.data.cats;
+      window.dishes=row.data.dishes;
+      localStorage.setItem('restaurantMenu',JSON.stringify(window.dishes));
+      localStorage.setItem('restaurantMenuCats',JSON.stringify(window.cats));
+      setLocalTs(remoteTs);
+      if(typeof window.persist==='function' && window.persist.__cloudSyncBase){
+        localStorage.setItem('restaurantMenu',JSON.stringify(window.dishes));
+        localStorage.setItem('restaurantMenuCats',JSON.stringify(window.cats));
+      }
+      if(typeof window.renderNav==='function')window.renderNav();
+      if(typeof window.fillCats==='function')window.fillCats();
+      if(typeof window.drawMenu==='function')window.drawMenu('all');
+      if(typeof window.drawAdmin==='function')window.drawAdmin();
+      if(typeof window.updateCartBadge==='function')window.updateCartBadge();
+      if(typeof window.applyTheme==='function')window.applyTheme();
+      if(typeof window.applyDishTransparency==='function')window.applyDishTransparency();
+      if(typeof window.applyNavTransparency==='function')window.applyNavTransparency();
+      if(typeof window.applyCategoryTransparency==='function')window.applyCategoryTransparency();
+      if(typeof window.applyBackground==='function')window.applyBackground();
+    }catch(e){console.warn('Cloud sync download failed',e)}
+    finally{applying=false}
+  }
+  function install(){
+    const p=window.persist;
+    if(typeof p==='function'&&!p.__cloudSyncBase){
+      function wrapped(){
+        const r=p.apply(this,arguments);
+        if(!applying){const t=Date.now();setLocalTs(t);clearTimeout(wrapped._timer);wrapped._timer=setTimeout(upload,250)}
+        return r;
+      }
+      wrapped.__cloudSyncBase=true;
+      window.persist=wrapped;
+    }
+    download();
+  }
+  setTimeout(install,0);
+  setInterval(download,5000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)download()});
+  window.restaurantMenuCloudSync={upload,download};
+})();
+</script>'''
+          s=s.replace('</body>',block+'\n</body>')
+          p.write_text(s,encoding='utf-8')
+      - name: Commit
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'Connect FA menu to Supabase sync'
+          git push
