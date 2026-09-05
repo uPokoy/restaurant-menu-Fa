@@ -1,0 +1,13 @@
+name: Test sync workflow
+on:
+  push:
+    paths:
+      - 'TEST_SYNC_TRIGGER.txt'
+permissions:
+  contents: write
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo workflow-ok
