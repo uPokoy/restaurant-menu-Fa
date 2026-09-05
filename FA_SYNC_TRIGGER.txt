@@ -1,1 +1,1 @@
-install cloud sync
+install cloud sync v2
