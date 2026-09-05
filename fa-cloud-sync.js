@@ -1,15 +1,16 @@
-/* FA_CLOUD_SYNC_V10 */
+/* FA_CLOUD_SYNC_V11 */
 (function(){
   'use strict';
 
   const API='https://jrpialhwbliicbsmzmvb.supabase.co/functions/v1/menu-sync';
-  const DIRTY_KEY='restaurantCloudSyncV10Dirty';
-  const DEVICE_KEY='restaurantCloudSyncV10Device';
+  const DIRTY_KEY='restaurantCloudSyncV11Dirty';
+  const DEVICE_KEY='restaurantCloudSyncV11Device';
   const POLL_MS=3000;
   const SAVE_DEBOUNCE_MS=700;
 
   let ready=false;
   let applying=false;
+  let uploading=false;
   let dirty=false;
   let lastState='';
   let lastCloud='';
@@ -17,24 +18,14 @@
   let saveTimer=0;
   let channel=null;
 
-  // IMPORTANT: cats/dishes are the application's actual global lexical bindings.
-  // Do not use window.cats/window.dishes: top-level let/const variables are not
-  // properties of window, which made the previous V9 implementation never become ready.
   function getState(){
     try{
       if(!Array.isArray(cats)||!Array.isArray(dishes)) return null;
-      return {
-        cats:cats.map(String),
-        dishes:JSON.parse(JSON.stringify(dishes))
-      };
-    }catch(e){
-      return null;
-    }
+      return {cats:cats.map(String),dishes:JSON.parse(JSON.stringify(dishes))};
+    }catch(e){return null;}
   }
 
-  function fingerprint(state){
-    try{return JSON.stringify(state)}catch(e){return ''}
-  }
+  function fingerprint(state){try{return JSON.stringify(state)}catch(e){return ''}}
 
   function saveLocal(state){
     try{
@@ -63,21 +54,16 @@
   }
 
   async function request(method,body){
-    const headers={'Content-Type':'application/json','Cache-Control':'no-cache','x-sync-client':'FA_V10'};
+    const headers={'Content-Type':'application/json','Cache-Control':'no-cache','x-sync-client':'FA_V11'};
     try{
       const r=await fetch(method==='GET'?API+'?t='+Date.now():API,{
-        method,
-        headers,
-        body:method==='POST'?JSON.stringify(body):undefined,
-        cache:'no-store'
+        method,headers,body:method==='POST'?JSON.stringify(body):undefined,cache:'no-store'
       });
       const text=await r.text();
       let json=null;
       try{json=text?JSON.parse(text):null}catch(e){}
       return {ok:r.ok,status:r.status,text,json};
-    }catch(error){
-      return {ok:false,status:0,text:String(error),json:null};
-    }
+    }catch(error){return {ok:false,status:0,text:String(error),json:null};}
   }
 
   function redraw(){
@@ -95,8 +81,6 @@
 
   function replaceState(remoteState){
     if(!Array.isArray(cats)||!Array.isArray(dishes)) return false;
-    // Mutate in place so this works whether the app declared these as let, var,
-    // or const. Every function holding a reference sees the new data immediately.
     cats.splice(0,cats.length,...remoteState.cats);
     dishes.splice(0,dishes.length,...remoteState.dishes);
     return true;
@@ -104,45 +88,56 @@
 
   async function readRemote(){
     const r=await request('GET');
-    if(!r.ok){
-      setStatus('🔴 Ошибка синхронизации','error');
-      console.warn('FA sync GET failed',r.status,r.text);
-      return null;
-    }
+    if(!r.ok){setStatus('🔴 Ошибка синхронизации','error');console.warn('FA sync GET failed',r.status,r.text);return null;}
     const rows=Array.isArray(r.json)?r.json:[];
     const row=rows[0];
     if(!row||!row.data||!Array.isArray(row.data.cats)||!Array.isArray(row.data.dishes)){
       setStatus('🔴 Ошибка данных','error');
-      console.warn('FA sync: invalid cloud response',r.text);
-      return null;
+      console.warn('FA sync invalid cloud response',r.text);return null;
     }
     const state={cats:row.data.cats,dishes:row.data.dishes};
     return {state,fingerprint:fingerprint(state),updatedAt:Date.parse(row.updated_at||'')||0};
   }
 
   async function upload(reason){
-    if(!ready||applying)return false;
+    if(!ready||applying||uploading)return false;
     const state=getState();
     const fp=fingerprint(state);
     if(!state||!fp)return false;
+
+    uploading=true;
     setStatus('🟡 Сохранение в облако...','saving');
-    const r=await request('POST',{id:'main',data:state,updated_at:new Date().toISOString()});
-    if(!r.ok){
-      setDirty(true);
-      setStatus('🔴 Ошибка сохранения','error');
-      console.warn('FA sync POST failed',r.status,r.text);
-      return false;
-    }
-    const row=Array.isArray(r.json)?r.json[0]:null;
-    lastState=fp;
-    lastCloud=fp;
-    lastCloudTime=Date.parse(row?.updated_at||'')||Date.now();
-    setDirty(false);
-    saveLocal(state);
-    setStatus('🟢 Синхронизировано','ok');
-    broadcast({type:'uploaded',fingerprint:fp,updatedAt:lastCloudTime});
-    console.log('FA sync V10: uploaded',reason||'change');
-    return true;
+    try{
+      const r=await request('POST',{id:'main',data:state,updated_at:new Date().toISOString()});
+      if(!r.ok){
+        setDirty(true);
+        setStatus('🔴 Ошибка сохранения','error');
+        console.warn('FA sync POST failed',r.status,r.text);
+        return false;
+      }
+
+      const row=Array.isArray(r.json)?r.json[0]:null;
+      const serverTime=Date.parse(row?.updated_at||'')||Date.now();
+      lastCloud=fp;
+      lastCloudTime=serverTime;
+
+      // Only clear dirty if nothing changed while this upload was in flight.
+      const current=getState();
+      const currentFp=fingerprint(current);
+      if(currentFp===fp){
+        lastState=fp;
+        setDirty(false);
+        saveLocal(state);
+        setStatus('🟢 Синхронизировано','ok');
+      }else{
+        // A newer local edit appeared during upload. Keep it dirty and let the next pass save it.
+        setDirty(true);
+        setStatus('🟡 Есть изменения...','dirty');
+      }
+      broadcast({type:'uploaded',fingerprint:fp,updatedAt:serverTime});
+      console.log('FA sync V11 uploaded',reason||'change');
+      return true;
+    }finally{uploading=false;}
   }
 
   async function applyRemote(remote,force){
@@ -150,10 +145,10 @@
     if(remote.fingerprint===lastState){
       lastCloud=remote.fingerprint;
       lastCloudTime=Math.max(lastCloudTime,remote.updatedAt);
-      setStatus('🟢 Синхронизировано','ok');
+      if(!dirty&&!uploading)setStatus('🟢 Синхронизировано','ok');
       return true;
     }
-    if(applying)return false;
+    if(applying||uploading)return false;
     if(!force&&dirty)return false;
     if(!force&&remote.updatedAt&&remote.updatedAt<=lastCloudTime)return true;
 
@@ -169,7 +164,6 @@
       redraw();
       setStatus('🟢 Синхронизировано','ok');
       broadcast({type:'applied',fingerprint:remote.fingerprint,updatedAt:lastCloudTime});
-      console.log('FA sync V10: downloaded cloud state');
       return true;
     }finally{applying=false;}
   }
@@ -182,7 +176,6 @@
       lastCloudTime=remote.updatedAt;
       const local=getState();
       const localFp=fingerprint(local);
-      // Cloud is authoritative on startup. Local storage never overwrites cloud here.
       if(remote.fingerprint!==localFp){
         applying=true;
         try{
@@ -192,21 +185,16 @@
             redraw();
           }
         }finally{applying=false;}
-      }else{
-        lastState=localFp;
-      }
+      }else lastState=localFp;
       setDirty(false);
       setStatus('🟢 Синхронизировано','ok');
-    }else{
-      lastState=fingerprint(getState());
-      console.warn('FA sync: cloud unavailable on startup, keeping local state');
-    }
+    }else lastState=fingerprint(getState());
     ready=true;
-    console.log('FA sync V10 ready');
+    console.log('FA sync V11 ready');
   }
 
   function scheduleUpload(){
-    if(!ready||applying)return;
+    if(!ready||applying||uploading)return;
     const state=getState();
     const fp=fingerprint(state);
     if(!state||!fp||fp===lastState)return;
@@ -217,36 +205,29 @@
   }
 
   async function poll(){
-    if(!ready||applying)return;
+    if(!ready||applying||uploading||dirty)return;
     const remote=await readRemote();
     if(!remote)return;
     if(remote.fingerprint===lastState){
       lastCloud=remote.fingerprint;
       lastCloudTime=Math.max(lastCloudTime,remote.updatedAt);
-      if(!dirty)setStatus('🟢 Синхронизировано','ok');
-      return;
-    }
-    // A local edit always wins until it has successfully uploaded.
-    if(dirty){
-      await upload('retry-local-change');
+      setStatus('🟢 Синхронизировано','ok');
       return;
     }
     await applyRemote(remote,false);
   }
 
-  function broadcast(message){
-    try{if(channel)channel.postMessage(message)}catch(e){}
-  }
+  function broadcast(message){try{if(channel)channel.postMessage(message)}catch(e){}}
 
   function installChannel(){
     try{
       if('BroadcastChannel' in window){
         channel=new BroadcastChannel(DEVICE_KEY);
-        channel.onmessage=async()=>{if(ready&&!dirty)await poll();};
+        channel.onmessage=async()=>{if(ready&&!dirty&&!uploading)await poll();};
       }
     }catch(e){}
     window.addEventListener('storage',e=>{
-      if((e.key==='restaurantMenu'||e.key==='restaurantCategories')&&!applying)scheduleUpload();
+      if((e.key==='restaurantMenu'||e.key==='restaurantCategories')&&!applying&&!uploading)scheduleUpload();
     });
   }
 
@@ -257,31 +238,24 @@
 
     installChannel();
     initial().catch(e=>{
-      console.warn('FA sync V10 initial error',e);
-      ready=true;
-      lastState=fingerprint(getState());
+      console.warn('FA sync V11 initial error',e);
+      ready=true;lastState=fingerprint(getState());
       setStatus('🔴 Ошибка синхронизации','error');
     });
 
-    // Detect changes made by the existing admin UI without touching its code.
-    setInterval(()=>{
-      if(!ready||applying)return;
-      scheduleUpload();
-    },500);
-
+    setInterval(()=>{if(!ready||applying||uploading)return;scheduleUpload();},500);
     setInterval(poll,POLL_MS);
-    document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll()});
-    window.addEventListener('focus',()=>poll());
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!dirty&&!uploading)poll()});
+    window.addEventListener('focus',()=>{if(!dirty&&!uploading)poll()});
 
     window.restaurantMenuCloudSync={
       upload:()=>upload('manual'),
       download:async()=>applyRemote(await readRemote(),true),
       forceUpload:()=>upload('manual-force'),
       forceDownload:async()=>applyRemote(await readRemote(),true),
-      status:()=>({ready,dirty,lastCloudTime,lastState})
+      status:()=>({ready,dirty,uploading,lastCloudTime,lastState})
     };
-
-    console.log('FA sync V10 installed');
+    console.log('FA sync V11 installed');
   }
 
   setTimeout(install,800);
