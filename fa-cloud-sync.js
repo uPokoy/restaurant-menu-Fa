@@ -1,12 +1,13 @@
-/* FA_CLOUD_SYNC_V12 */
+/* FA_CLOUD_SYNC_V13 */
 (function(){
   'use strict';
 
   const API='https://jrpialhwbliicbsmzmvb.supabase.co/functions/v1/menu-sync';
-  const DIRTY_KEY='restaurantCloudSyncV12Dirty';
-  const DEVICE_KEY='restaurantCloudSyncV12Device';
+  const DIRTY_KEY='restaurantCloudSyncV13Dirty';
+  const DEVICE_KEY='restaurantCloudSyncV13Device';
   const POLL_MS=3000;
   const SAVE_DEBOUNCE_MS=700;
+  const REQUEST_TIMEOUT_MS=8000;
 
   let ready=false, applying=false, uploading=false, dirty=false;
   let lastState='', lastCloud='', lastCloudTime=0, saveTimer=0, channel=null;
@@ -28,12 +29,22 @@
     }catch(e){}
   }
   async function request(method,body){
-    const headers={'Content-Type':'application/json','Cache-Control':'no-cache','x-sync-client':'FA_V12'};
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),REQUEST_TIMEOUT_MS);
     try{
-      const r=await fetch(method==='GET'?API+'?t='+Date.now():API,{method,headers,body:method==='POST'?JSON.stringify(body):undefined,cache:'no-store'});
+      const options={method,cache:'no-store',signal:controller.signal};
+      if(method==='POST'){
+        options.headers={'Content-Type':'application/json'};
+        options.body=JSON.stringify(body);
+      }
+      const url=method==='GET'?API+'?t='+Date.now():API;
+      const r=await fetch(url,options);
       const text=await r.text();let json=null;try{json=text?JSON.parse(text):null}catch(e){}
       return {ok:r.ok,status:r.status,text,json};
-    }catch(error){return {ok:false,status:0,text:String(error),json:null};}
+    }catch(error){
+      const message=error&&error.name==='AbortError'?'timeout':String(error);
+      return {ok:false,status:0,text:message,json:null};
+    }finally{clearTimeout(timeout);}
   }
   function redraw(){
     try{renderNav()}catch(e){} try{fillCats()}catch(e){} try{drawMenu('all')}catch(e){} try{drawAdmin()}catch(e){} try{updateCartBadge()}catch(e){}
@@ -105,7 +116,7 @@
   function install(){
     let valid=false;try{valid=Array.isArray(cats)&&Array.isArray(dishes)}catch(e){}
     if(!valid){setTimeout(install,250);return;}
-    installChannel();initial().catch(e=>{console.warn('FA sync V12 initial error',e);ready=true;lastState=fingerprint(getState());setStatus('🔴 Ошибка синхронизации','error')});
+    installChannel();initial().catch(e=>{console.warn('FA sync V13 initial error',e);ready=true;lastState=fingerprint(getState());setStatus('🔴 Ошибка синхронизации','error')});
     setInterval(()=>{if(!ready||applying||uploading)return;scheduleUpload()},500);
     setInterval(poll,POLL_MS);
     document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!dirty&&!uploading)poll()});
