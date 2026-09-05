@@ -1,12 +1,12 @@
-/* FA_CLOUD_SYNC_V9 */
+/* FA_CLOUD_SYNC_V10 */
 (function(){
   'use strict';
 
   const API='https://jrpialhwbliicbsmzmvb.supabase.co/functions/v1/menu-sync';
-  const DIRTY_KEY='restaurantCloudSyncV9Dirty';
-  const DEVICE_KEY='restaurantCloudSyncV9Device';
+  const DIRTY_KEY='restaurantCloudSyncV10Dirty';
+  const DEVICE_KEY='restaurantCloudSyncV10Device';
   const POLL_MS=3000;
-  const SAVE_DEBOUNCE_MS=500;
+  const SAVE_DEBOUNCE_MS=700;
 
   let ready=false;
   let applying=false;
@@ -17,11 +17,19 @@
   let saveTimer=0;
   let channel=null;
 
+  // IMPORTANT: cats/dishes are the application's actual global lexical bindings.
+  // Do not use window.cats/window.dishes: top-level let/const variables are not
+  // properties of window, which made the previous V9 implementation never become ready.
   function getState(){
-    return {
-      cats:Array.isArray(window.cats)?window.cats.map(String):[],
-      dishes:Array.isArray(window.dishes)?JSON.parse(JSON.stringify(window.dishes)):[]
-    };
+    try{
+      if(!Array.isArray(cats)||!Array.isArray(dishes)) return null;
+      return {
+        cats:cats.map(String),
+        dishes:JSON.parse(JSON.stringify(dishes))
+      };
+    }catch(e){
+      return null;
+    }
   }
 
   function fingerprint(state){
@@ -40,8 +48,22 @@
     try{localStorage.setItem(DIRTY_KEY,dirty?'1':'0')}catch(e){}
   }
 
+  function setStatus(text,type){
+    try{
+      let el=document.getElementById('cloudSyncStatus');
+      if(!el){
+        el=document.createElement('div');
+        el.id='cloudSyncStatus';
+        el.style.cssText='position:fixed;right:12px;bottom:12px;z-index:99999;padding:7px 11px;border-radius:999px;background:rgba(20,20,20,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.18);pointer-events:none;opacity:.9';
+        document.body.appendChild(el);
+      }
+      el.textContent=text;
+      el.dataset.state=type||'';
+    }catch(e){}
+  }
+
   async function request(method,body){
-    const headers={'Content-Type':'application/json','Cache-Control':'no-cache','x-sync-client':'FA_V9'};
+    const headers={'Content-Type':'application/json','Cache-Control':'no-cache','x-sync-client':'FA_V10'};
     try{
       const r=await fetch(method==='GET'?API+'?t='+Date.now():API,{
         method,
@@ -71,12 +93,26 @@
     try{applyBackground()}catch(e){}
   }
 
+  function replaceState(remoteState){
+    if(!Array.isArray(cats)||!Array.isArray(dishes)) return false;
+    // Mutate in place so this works whether the app declared these as let, var,
+    // or const. Every function holding a reference sees the new data immediately.
+    cats.splice(0,cats.length,...remoteState.cats);
+    dishes.splice(0,dishes.length,...remoteState.dishes);
+    return true;
+  }
+
   async function readRemote(){
     const r=await request('GET');
-    if(!r.ok){console.warn('FA sync GET failed',r.status,r.text);return null;}
+    if(!r.ok){
+      setStatus('🔴 Ошибка синхронизации','error');
+      console.warn('FA sync GET failed',r.status,r.text);
+      return null;
+    }
     const rows=Array.isArray(r.json)?r.json:[];
     const row=rows[0];
     if(!row||!row.data||!Array.isArray(row.data.cats)||!Array.isArray(row.data.dishes)){
+      setStatus('🔴 Ошибка данных','error');
       console.warn('FA sync: invalid cloud response',r.text);
       return null;
     }
@@ -88,10 +124,12 @@
     if(!ready||applying)return false;
     const state=getState();
     const fp=fingerprint(state);
-    if(!fp)return false;
+    if(!state||!fp)return false;
+    setStatus('🟡 Сохранение в облако...','saving');
     const r=await request('POST',{id:'main',data:state,updated_at:new Date().toISOString()});
     if(!r.ok){
       setDirty(true);
+      setStatus('🔴 Ошибка сохранения','error');
       console.warn('FA sync POST failed',r.status,r.text);
       return false;
     }
@@ -101,8 +139,9 @@
     lastCloudTime=Date.parse(row?.updated_at||'')||Date.now();
     setDirty(false);
     saveLocal(state);
+    setStatus('🟢 Синхронизировано','ok');
     broadcast({type:'uploaded',fingerprint:fp,updatedAt:lastCloudTime});
-    console.log('FA sync V9: uploaded',reason||'change');
+    console.log('FA sync V10: uploaded',reason||'change');
     return true;
   }
 
@@ -111,6 +150,7 @@
     if(remote.fingerprint===lastState){
       lastCloud=remote.fingerprint;
       lastCloudTime=Math.max(lastCloudTime,remote.updatedAt);
+      setStatus('🟢 Синхронизировано','ok');
       return true;
     }
     if(applying)return false;
@@ -119,55 +159,59 @@
 
     applying=true;
     try{
-      window.cats=remote.state.cats;
-      window.dishes=remote.state.dishes;
+      setStatus('🟡 Загрузка из облака...','loading');
+      if(!replaceState(remote.state))return false;
       saveLocal(remote.state);
       lastState=remote.fingerprint;
       lastCloud=remote.fingerprint;
       lastCloudTime=remote.updatedAt||Date.now();
       setDirty(false);
       redraw();
+      setStatus('🟢 Синхронизировано','ok');
       broadcast({type:'applied',fingerprint:remote.fingerprint,updatedAt:lastCloudTime});
-      console.log('FA sync V9: downloaded cloud state');
+      console.log('FA sync V10: downloaded cloud state');
       return true;
     }finally{applying=false;}
   }
 
   async function initial(){
+    setStatus('🟡 Подключение к облаку...','loading');
     const remote=await readRemote();
     if(remote){
       lastCloud=remote.fingerprint;
       lastCloudTime=remote.updatedAt;
       const local=getState();
       const localFp=fingerprint(local);
-      // Cloud is authoritative on startup. Never replace cloud with local storage here.
+      // Cloud is authoritative on startup. Local storage never overwrites cloud here.
       if(remote.fingerprint!==localFp){
         applying=true;
         try{
-          window.cats=remote.state.cats;
-          window.dishes=remote.state.dishes;
-          saveLocal(remote.state);
-          lastState=remote.fingerprint;
-          redraw();
+          if(replaceState(remote.state)){
+            saveLocal(remote.state);
+            lastState=remote.fingerprint;
+            redraw();
+          }
         }finally{applying=false;}
       }else{
         lastState=localFp;
       }
       setDirty(false);
+      setStatus('🟢 Синхронизировано','ok');
     }else{
-      // If the cloud is temporarily unavailable, keep the current local menu and retry later.
       lastState=fingerprint(getState());
       console.warn('FA sync: cloud unavailable on startup, keeping local state');
     }
     ready=true;
-    console.log('FA sync V9 ready');
+    console.log('FA sync V10 ready');
   }
 
   function scheduleUpload(){
     if(!ready||applying)return;
-    const fp=fingerprint(getState());
-    if(!fp||fp===lastState)return;
+    const state=getState();
+    const fp=fingerprint(state);
+    if(!state||!fp||fp===lastState)return;
     setDirty(true);
+    setStatus('🟡 Есть изменения...','dirty');
     clearTimeout(saveTimer);
     saveTimer=setTimeout(()=>upload('local-change'),SAVE_DEBOUNCE_MS);
   }
@@ -179,9 +223,10 @@
     if(remote.fingerprint===lastState){
       lastCloud=remote.fingerprint;
       lastCloudTime=Math.max(lastCloudTime,remote.updatedAt);
+      if(!dirty)setStatus('🟢 Синхронизировано','ok');
       return;
     }
-    // If this device has a newer local edit, finish its upload before accepting cloud state.
+    // A local edit always wins until it has successfully uploaded.
     if(dirty){
       await upload('retry-local-change');
       return;
@@ -207,13 +252,18 @@
 
   function install(){
     let valid=false;
-    try{valid=Array.isArray(window.cats)&&Array.isArray(window.dishes)&&typeof window.persist==='function'}catch(e){}
+    try{valid=Array.isArray(cats)&&Array.isArray(dishes)}catch(e){}
     if(!valid){setTimeout(install,250);return;}
 
     installChannel();
-    initial().catch(e=>{console.warn('FA sync V9 initial error',e);ready=true;lastState=fingerprint(getState())});
+    initial().catch(e=>{
+      console.warn('FA sync V10 initial error',e);
+      ready=true;
+      lastState=fingerprint(getState());
+      setStatus('🔴 Ошибка синхронизации','error');
+    });
 
-    // Detect menu changes made by the admin UI without depending on adminUnlocked scope.
+    // Detect changes made by the existing admin UI without touching its code.
     setInterval(()=>{
       if(!ready||applying)return;
       scheduleUpload();
@@ -227,10 +277,11 @@
       upload:()=>upload('manual'),
       download:async()=>applyRemote(await readRemote(),true),
       forceUpload:()=>upload('manual-force'),
-      forceDownload:async()=>applyRemote(await readRemote(),true)
+      forceDownload:async()=>applyRemote(await readRemote(),true),
+      status:()=>({ready,dirty,lastCloudTime,lastState})
     };
 
-    console.log('FA sync V9 installed');
+    console.log('FA sync V10 installed');
   }
 
   setTimeout(install,800);
