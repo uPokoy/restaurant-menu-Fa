@@ -1,99 +1,88 @@
-/* FA_CLOUD_SYNC_V2 */
+/* FA_CLOUD_SYNC_V3 */
 (function(){
   const API='https://jrpialhwbliicbsmzmvb.supabase.co/functions/v1/menu-sync';
-  const TS='restaurantMenuCloudUpdatedAtFA';
-  const FP='restaurantMenuCloudFingerprintFA';
-  let applying=false;
-  let ready=false;
-  let lastLocal='';
-  let uploadTimer=0;
+  let applying=false, ready=false, lastFp='', timer=0, originalPersist=null;
 
-  const readTs=()=>Number(localStorage.getItem(TS)||0);
-  const setTs=t=>{try{localStorage.setItem(TS,String(t))}catch(e){}};
-  const fingerprint=()=>{
-    try{return JSON.stringify({cats:window.cats||[],dishes:window.dishes||[]})}
-    catch(e){return ''}
-  };
-  const setFp=s=>{try{localStorage.setItem(FP,s)}catch(e){}};
-
-  function redraw(){
-    try{if(typeof window.renderNav==='function')window.renderNav()}catch(e){}
-    try{if(typeof window.fillCats==='function')window.fillCats()}catch(e){}
-    try{if(typeof window.drawMenu==='function')window.drawMenu('all')}catch(e){}
-    try{if(typeof window.drawAdmin==='function')window.drawAdmin()}catch(e){}
-    try{if(typeof window.updateCartBadge==='function')window.updateCartBadge()}catch(e){}
-    try{if(typeof window.applyTheme==='function')window.applyTheme()}catch(e){}
-    try{if(typeof window.applyDishTransparency==='function')window.applyDishTransparency()}catch(e){}
-    try{if(typeof window.applyNavTransparency==='function')window.applyNavTransparency()}catch(e){}
-    try{if(typeof window.applyCategoryTransparency==='function')window.applyCategoryTransparency()}catch(e){}
-    try{if(typeof window.applyBackground==='function')window.applyBackground()}catch(e){}
+  function fp(){
+    try{return JSON.stringify({cats:Array.isArray(window.cats)?window.cats:[],dishes:Array.isArray(window.dishes)?window.dishes:[]})}catch(e){return ''}
   }
-
+  function saveLocal(){
+    try{
+      localStorage.setItem('restaurantCategories',JSON.stringify(window.cats||[]));
+      localStorage.setItem('restaurantMenu',JSON.stringify(window.dishes||[]));
+    }catch(e){}
+  }
+  function redraw(){
+    try{window.renderNav&&window.renderNav()}catch(e){}
+    try{window.fillCats&&window.fillCats()}catch(e){}
+    try{window.drawMenu&&window.drawMenu('all')}catch(e){}
+    try{window.drawAdmin&&window.drawAdmin()}catch(e){}
+    try{window.updateCartBadge&&window.updateCartBadge()}catch(e){}
+    try{window.applyTheme&&window.applyTheme()}catch(e){}
+    try{window.applyDishTransparency&&window.applyDishTransparency()}catch(e){}
+    try{window.applyNavTransparency&&window.applyNavTransparency()}catch(e){}
+    try{window.applyCategoryTransparency&&window.applyCategoryTransparency()}catch(e){}
+    try{window.applyBackground&&window.applyBackground()}catch(e){}
+  }
   async function upload(force){
     if(applying||!Array.isArray(window.cats)||!Array.isArray(window.dishes))return false;
-    const fp=fingerprint();
-    if(!force&&fp===lastLocal)return false;
-    const t=new Date().toISOString();
+    const data={cats:window.cats,dishes:window.dishes};
+    const current=JSON.stringify(data);
+    if(!force&&current===lastFp)return true;
     try{
-      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:'main',data:{cats:window.cats,dishes:window.dishes},updated_at:t})});
-      if(!r.ok){console.warn('FA cloud upload HTTP',r.status);return false}
-      lastLocal=fp;
-      setFp(fp);
-      setTs(Date.parse(t));
-      console.log('FA cloud sync: uploaded');
+      const r=await fetch(API,{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:'main',data,updated_at:new Date().toISOString()})});
+      if(!r.ok){console.warn('FA sync upload HTTP',r.status);return false}
+      lastFp=current;
+      console.log('FA sync upload OK');
       return true;
-    }catch(e){console.warn('FA cloud upload',e);return false}
+    }catch(e){console.warn('FA sync upload error',e);return false}
   }
-
   async function download(){
     try{
-      const r=await fetch(API,{cache:'no-store'});
-      if(!r.ok){console.warn('FA cloud download HTTP',r.status);return false}
+      const r=await fetch(API+'?t='+Date.now(),{cache:'no-store'});
+      if(!r.ok){console.warn('FA sync download HTTP',r.status);return false}
       const rows=await r.json();
       const row=Array.isArray(rows)?rows[0]:null;
-      if(!row||!row.data||!Array.isArray(row.data.dishes)||!Array.isArray(row.data.cats))return false;
-      const remoteFp=JSON.stringify({cats:row.data.cats,dishes:row.data.dishes});
-      const localFp=fingerprint();
-      if(ready&&remoteFp===localFp)return true;
-
+      if(!row||!row.data||!Array.isArray(row.data.cats)||!Array.isArray(row.data.dishes))return false;
+      const remote=JSON.stringify({cats:row.data.cats,dishes:row.data.dishes});
+      if(ready&&remote===fp())return true;
       applying=true;
       window.cats=row.data.cats;
       window.dishes=row.data.dishes;
-      localStorage.setItem('restaurantMenu',JSON.stringify(window.dishes));
-      if(localStorage.getItem('restaurantCategories')!==null)localStorage.setItem('restaurantCategories',JSON.stringify(window.cats));
-      localStorage.setItem('restaurantMenuCats',JSON.stringify(window.cats));
-      setTs(Date.parse(row.updated_at||'')||Date.now());
-      setFp(remoteFp);
-      lastLocal=remoteFp;
+      saveLocal();
+      lastFp=remote;
       redraw();
-      ready=true;
-      console.log('FA cloud sync: downloaded');
+      console.log('FA sync download OK',row.updated_at||'');
       return true;
-    }catch(e){console.warn('FA cloud download',e);return false}
+    }catch(e){console.warn('FA sync download error',e);return false}
     finally{applying=false}
   }
-
-  function detectLocalChanges(){
+  function watch(){
     if(applying||!Array.isArray(window.cats)||!Array.isArray(window.dishes))return;
-    const fp=fingerprint();
-    if(!ready){lastLocal=fp;return}
-    if(fp!==lastLocal){
-      clearTimeout(uploadTimer);
-      uploadTimer=setTimeout(()=>upload(false),300);
+    const current=fp();
+    if(!ready){lastFp=current;return}
+    if(current!==lastFp){
+      clearTimeout(timer);
+      timer=setTimeout(()=>upload(false),150);
     }
   }
-
   function install(){
-    download().then(()=>{
-      ready=true;
-      lastLocal=fingerprint();
-      setFp(lastLocal);
-    });
-    setInterval(detectLocalChanges,1000);
-    setInterval(download,5000);
+    if(typeof window.persist==='function'&&!window.persist.__faSyncV3){
+      originalPersist=window.persist;
+      function wrappedPersist(){
+        const result=originalPersist.apply(this,arguments);
+        if(!applying){clearTimeout(timer);timer=setTimeout(()=>upload(false),50)}
+        return result;
+      }
+      wrappedPersist.__faSyncV3=true;
+      window.persist=wrappedPersist;
+    }
+    download().then(()=>{ready=true;lastFp=fp()});
+    setInterval(watch,500);
+    setInterval(download,3000);
+    window.addEventListener('pagehide',()=>{if(!applying)upload(true)});
     document.addEventListener('visibilitychange',()=>{if(!document.hidden)download()});
+    window.restaurantMenuCloudSync={upload,download,forceUpload:()=>upload(true),forceDownload:download};
   }
-
-  setTimeout(install,1000);
-  window.restaurantMenuCloudSync={upload,download};
+  setTimeout(install,0);
 })();
