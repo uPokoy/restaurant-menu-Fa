@@ -1,4 +1,4 @@
-/* FA_CLOUD_SYNC_V16_FIX_400 */
+/* FA_CLOUD_SYNC_V17_DIAGNOSTIC */
 (function(){
   'use strict';
 
@@ -32,12 +32,12 @@
     if(method==='POST'){opt.headers['Content-Type']='application/json';opt.headers['Prefer']='resolution=merge-duplicates,return=representation';}
     if(method==='POST') opt.body=JSON.stringify(body);
     try{
-      // Не добавляем произвольные query-параметры: PostgREST отвечает 400 на неизвестный параметр t.
-      const url=method==='GET'?API+'?id=eq.main&select=id,data,updated_at':API+'?on_conflict=id';
+      // V17: чтение без фильтра. Это исключает любые проблемы с разбором filter-параметра PostgREST.
+      const url=method==='GET'?API+'?select=*':API+'?on_conflict=id';
       const r=await fetch(url,opt); const text=await r.text(); let json=null; try{json=text?JSON.parse(text):null}catch(e){}
       return {ok:r.ok,status:r.status,text,json};
     }catch(e){return {ok:false,status:0,text:e&&e.name==='AbortError'?'timeout':String(e),json:null};}
-    finally{clearTimeout(timer)}
+    finally{clearTimeout(timer);}
   }
   function redraw(){
     try{renderNav()}catch(e){} try{fillCats()}catch(e){} try{drawMenu('all')}catch(e){} try{drawAdmin()}catch(e){} try{updateCartBadge()}catch(e){}
@@ -49,9 +49,17 @@
   }
   async function readRemote(){
     const r=await request('GET');
-    if(!r.ok){console.warn('FA direct GET failed',r.status,r.text);status('🔴 Облако: ошибка чтения '+(r.status||'сеть'),'offline');return null;}
-    const row=Array.isArray(r.json)?r.json[0]:null;
-    if(!row||!row.data||!Array.isArray(row.data.cats)||!Array.isArray(row.data.dishes)){console.warn('FA direct invalid data',r.text);status('🔴 Облако: неверные данные','offline');return null;}
+    if(!r.ok){
+      console.warn('FA direct GET failed',r.status,r.text);
+      let detail=''; try{const j=JSON.parse(r.text||'{}');detail=j.message||j.code||j.error||'';}catch(e){}
+      status('🔴 Облако: ошибка чтения '+(r.status||'сеть')+(detail?' · '+detail:'') ,'offline');
+      return null;
+    }
+    const rows=Array.isArray(r.json)?r.json:[];
+    const row=rows.find(x=>x&&x.id==='main')||rows[0]||null;
+    if(!row||!row.data||!Array.isArray(row.data.cats)||!Array.isArray(row.data.dishes)){
+      console.warn('FA direct invalid data',r.text);status('🔴 Облако: неверные данные','offline');return null;
+    }
     return {state:{cats:row.data.cats,dishes:row.data.dishes},fingerprint:fp({cats:row.data.cats,dishes:row.data.dishes}),updatedAt:Date.parse(row.updated_at||'')||0};
   }
   async function upload(){
@@ -60,7 +68,7 @@
     uploading=true; status('🟡 Сохранение в облако...','saving');
     try{
       const r=await request('POST',{id:'main',data:s,updated_at:new Date().toISOString()});
-      if(!r.ok){dirty=true;status('🔴 Ошибка облака '+(r.status||'сеть'),'offline');console.warn('FA direct POST failed',r.status,r.text);return false;}
+      if(!r.ok){dirty=true;let detail='';try{const j=JSON.parse(r.text||'{}');detail=j.message||j.code||j.error||'';}catch(e){}status('🔴 Ошибка облака '+(r.status||'сеть')+(detail?' · '+detail:''),'offline');console.warn('FA direct POST failed',r.status,r.text);return false;}
       const row=Array.isArray(r.json)?r.json[0]:null;
       lastCloud=f; lastCloudTime=Date.parse(row&&row.updated_at||'')||Date.now();
       lastState=fp(getState()); dirty=false; saveLocal(s); status('🟢 Синхронизировано','ok'); return true;
@@ -75,14 +83,14 @@
     finally{applying=false;}
   }
   async function initial(){
-    status('🟡 Подключение к облаку...','loading');
+    status('🟡 Облако V17: подключение...','loading');
     const r=await readRemote();
     if(r){
       lastCloud=r.fingerprint;lastCloudTime=r.updatedAt;
       const local=getState(), lf=fp(local);
       if(r.fingerprint!==lf){applying=true;try{replaceState(r.state);saveLocal(r.state);lastState=r.fingerprint;redraw();}finally{applying=false;}}
       else lastState=lf;
-      dirty=false;status('🟢 Синхронизировано','ok');
+      dirty=false;status('🟢 Облако V17: синхронизировано','ok');
     }else lastState=fp(getState());
     ready=true;
   }
@@ -99,7 +107,7 @@
     setInterval(poll,POLL_MS);
     document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!dirty&&!uploading)poll()});
     window.addEventListener('focus',()=>{if(!dirty&&!uploading)poll()});
-    window.restaurantMenuCloudSync={upload,download:async()=>applyRemote(await readRemote(),true),forceUpload:upload,forceDownload:async()=>applyRemote(await readRemote(),true),status:()=>({ready,dirty,uploading,lastCloudTime,lastState})};
+    window.restaurantMenuCloudSync={upload,download:async()=>applyRemote(await readRemote(),true),forceUpload:upload,forceDownload:async()=>applyRemote(await readRemote(),true),status:()=>({ready,dirty,uploading,lastCloudTime,lastState,version:'V17'})};
   }
   setTimeout(install,800);
 })();
