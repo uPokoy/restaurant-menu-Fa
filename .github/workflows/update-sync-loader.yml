@@ -20,14 +20,18 @@ jobs:
           if new not in s:
               if old not in s:
                   raise SystemExit('sync loader reference not found')
-              s = s.replace(old, new)
-              p.write_text(s, encoding='utf-8')
-          else:
-              print('already updated')
+              s = s.replace(old, new, 1)
+          cart = 'fa-cart-sync-loader.js'
+          if cart not in s:
+              marker = '<head>'
+              if marker not in s:
+                  raise SystemExit('head marker not found')
+              s = s.replace(marker, marker + '\n<script src="fa-cart-sync-loader.js?build=1.1"></script>', 1)
+          p.write_text(s, encoding='utf-8')
       - name: Commit index change
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
-          git diff --cached --quiet || git commit -m 'Load unique V27 sync loader'
+          git diff --cached --quiet || git commit -m 'Load shared cart sync'
           git push
