@@ -1,0 +1,33 @@
+name: Update sync loader
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  update-loader:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace sync script reference
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = 'fa-cloud-sync.js'
+          new = 'fa-cloud-sync-v27-loader.js'
+          if new not in s:
+              if old not in s:
+                  raise SystemExit('sync loader reference not found')
+              s = s.replace(old, new)
+              p.write_text(s, encoding='utf-8')
+          else:
+              print('already updated')
+      - name: Commit index change
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'Load unique V27 sync loader'
+          git push
