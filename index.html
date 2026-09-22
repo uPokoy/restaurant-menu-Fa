@@ -448,21 +448,36 @@ function applyBackground(){
   applyBackgroundBlur();
 }
 let adminUnlocked=false;
-const ADMIN_PASSWORD="9912";
 
-function requireAdmin(){
+async function requireAdmin(){
   if(adminUnlocked) return true;
+  const cloud=window.restaurantMenuCloudSync;
+  if(!cloud || typeof cloud.adminLogin!=='function'){
+    alert("Облачная синхронизация ещё подключается. Повторите через несколько секунд.");
+    return false;
+  }
+  if(typeof cloud.hasAdminSession==='function' && cloud.hasAdminSession()){
+    try{
+      if(await cloud.adminCheck()){
+        adminUnlocked=true;
+        return true;
+      }
+    }catch(e){}
+  }
   const entered=prompt("Введите пароль для доступа к добавлению блюд:");
-  if(entered===ADMIN_PASSWORD){
+  if(entered===null) return false;
+  try{
+    await cloud.adminLogin(entered);
     adminUnlocked=true;
     return true;
+  }catch(e){
+    alert("Неверный пароль.");
+    return false;
   }
-  if(entered!==null) alert("Неверный пароль.");
-  return false;
 }
 
-function showAdd(btn){
- if(!requireAdmin()) return;
+async function showAdd(btn){
+ if(!await requireAdmin()) return;
  document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
  btn.classList.add("active");
  applyNavTransparency();
