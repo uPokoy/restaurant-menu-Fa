@@ -2,7 +2,7 @@
 (function(){
   'use strict';
   var s=document.createElement('script');
-  s.src='fa-cloud-sync-v27.js?build=28.1';
+  s.src='fa-cloud-sync-v27.js?build=28.2';
   s.async=false;
   s.onload=function(){
     console.info('[FA] Cloud sync V27 loaded');
