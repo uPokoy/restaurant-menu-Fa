@@ -12,7 +12,7 @@
   }
 
   var o=document.createElement('script');
-  o.src='fa-image-optimize.js?build=2.0';
+  o.src='fa-image-optimize.js?build=3.0';
   o.async=false;
   o.onload=function(){console.info('[FA] Image optimizer loaded');loadCloud()};
   o.onerror=function(){console.warn('[FA] Image optimizer failed to load');loadCloud()};
