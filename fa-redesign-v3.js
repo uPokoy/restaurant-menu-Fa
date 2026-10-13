@@ -260,26 +260,6 @@
     });
   }
 
-  function centerCard(card){
-    if(!card||!card.isConnected||!card.classList.contains('expanded')) return;
-    var rect=card.getBoundingClientRect();
-    var nav=document.querySelector('nav');
-    var navH=nav?nav.getBoundingClientRect().height:0;
-    var visibleHeight=Math.max(1,window.innerHeight-navH);
-    var visibleCenter=navH+(visibleHeight/2);
-    var absoluteCardCenter=window.scrollY+rect.top+(rect.height/2);
-    var target=absoluteCardCenter-visibleCenter;
-    var max=Math.max(0,document.documentElement.scrollHeight-window.innerHeight);
-    target=Math.max(0,Math.min(target,max));
-    window.scrollTo({top:target,behavior:'smooth'});
-  }
-
-  function scheduleCenter(card){
-    window.setTimeout(function(){
-      requestAnimationFrame(function(){centerCard(card);});
-    },30);
-  }
-
   function flushWheelScroll(){
     wheelFrame=0;
     if(!pendingWheelDelta) return;
@@ -303,7 +283,6 @@
       closeExpandedExcept(card);
       if(card.classList.contains('expanded')){
         activeExpandedKey=card.dataset.faDishKey||null;
-        if(card.matches('#menuPage .card')) scheduleCenter(card);
       }else{
         activeExpandedKey=null;
       }
@@ -316,7 +295,6 @@
       window.setTimeout(function(){
         closeExpandedExcept(card.classList.contains('expanded')?card:null);
         activeExpandedKey=card.classList.contains('expanded')?(card.dataset.faDishKey||null):null;
-        if(card.classList.contains('expanded')&&card.matches('#menuPage .card')) scheduleCenter(card);
       },0);
     });
 
