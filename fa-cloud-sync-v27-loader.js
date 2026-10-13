@@ -86,7 +86,7 @@
     }
     var h=document.createElement('script');
     h.id='fa-home-sections-v1-js';
-    h.src='fa-home-sections-v1.js?build=1.2';
+    h.src='fa-home-sections-v1.js?build=1.3';
     h.async=false;
     h.onload=function(){console.info('[FA] Home sections loaded');loadNoveltyFix()};
     h.onerror=function(){console.warn('[FA] Home sections failed to load');loadNoveltyFix()};
