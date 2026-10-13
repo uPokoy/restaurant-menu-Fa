@@ -28,7 +28,7 @@
       var stable=document.createElement('link');
       stable.id='fa-scroll-stability-v1-css';
       stable.rel='stylesheet';
-      stable.href='fa-scroll-stability-v1.css?build=1.0';
+      stable.href='fa-scroll-stability-v1.css?build=1.1';
       document.head.appendChild(stable);
     }
   }
@@ -37,7 +37,7 @@
     if(document.getElementById('fa-scroll-stability-v1-js')) return;
     var s=document.createElement('script');
     s.id='fa-scroll-stability-v1-js';
-    s.src='fa-scroll-stability-v1.js?build=1.0';
+    s.src='fa-scroll-stability-v1.js?build=1.1';
     s.async=false;
     s.onload=function(){console.info('[FA] Scroll stability loaded')};
     s.onerror=function(){console.warn('[FA] Scroll stability failed to load')};
