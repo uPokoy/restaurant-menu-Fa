@@ -1,0 +1,36 @@
+name: Temporary startup photo fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/temp-fix-spaghetti-photo.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use existing Supabase pasta photo
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          old='https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/3.jpg'
+          new='https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/106.jpg'
+          if s.count(old)!=1:
+              raise SystemExit(f'Expected one missing startup photo URL, got {s.count(old)}')
+          p.write_text(s.replace(old,new,1),encoding='utf-8')
+          PY
+          git config user.name "uPokoy"
+          git config user.email "120357426+uPokoy@users.noreply.github.com"
+          git rm .github/workflows/temp-fix-spaghetti-photo.yml
+          git add index.html
+          git diff --cached --check
+          git commit -m "Fix startup spaghetti photo"
+          git push origin HEAD:main
