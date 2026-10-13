@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="fa-home-polish-v1.css?build=1.0">
 <link rel="stylesheet" href="fa-novelty-card-fix-v1.css?build=1.0">
 <link rel="stylesheet" href="fa-cart-badge-fix-v1.css?build=1.0">
-<link rel="stylesheet" href="fa-admin-polish-v1.css?build=1.0">
+<link rel="stylesheet" href="fa-admin-polish-v1.css?build=1.1">
 </head>
 <body class="theme-dark">
 <header><h1 id="title">МЕНЮ</h1><p>Свежие блюда каждый день</p></header>
@@ -117,7 +117,6 @@ const formTitle=document.getElementById("formTitle");
 const newCat=document.getElementById("newCat");
 const catList=document.getElementById("catList");
 const dishAdmin=document.getElementById("dishAdmin");
-
 function persist(){
   localStorage.setItem("restaurantCategories",JSON.stringify(cats));
   localStorage.setItem("restaurantMenu",JSON.stringify(dishes));
