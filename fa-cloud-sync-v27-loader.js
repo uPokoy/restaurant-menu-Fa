@@ -35,7 +35,7 @@
       var home=document.createElement('link');
       home.id='fa-home-sections-v1-css';
       home.rel='stylesheet';
-      home.href='fa-home-sections-v1.css?build=1.0';
+      home.href='fa-home-sections-v1.css?build=1.1';
       document.head.appendChild(home);
     }
   }
@@ -44,7 +44,7 @@
     if(document.getElementById('fa-home-sections-v1-js')) return;
     var h=document.createElement('script');
     h.id='fa-home-sections-v1-js';
-    h.src='fa-home-sections-v1.js?build=1.0';
+    h.src='fa-home-sections-v1.js?build=1.1';
     h.async=false;
     h.onload=function(){console.info('[FA] Home sections loaded')};
     h.onerror=function(){console.warn('[FA] Home sections failed to load')};
