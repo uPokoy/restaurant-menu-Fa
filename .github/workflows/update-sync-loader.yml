@@ -9,19 +9,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Replace sync script reference
+      - name: Verify current sync loaders
         shell: python
         run: |
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          old = 'fa-cloud-sync.js'
-          new = 'fa-cloud-sync-v27-loader.js'
-          if new not in s:
-              if old not in s:
-                  raise SystemExit('sync loader reference not found')
-              s = s.replace(old, new, 1)
+          cloud = 'fa-cloud-sync-v27-loader.js'
           cart = 'fa-cart-sync-loader.js'
+          if cloud not in s:
+              raise SystemExit('current cloud sync loader reference not found')
           if cart not in s:
               marker = '<head>'
               if marker not in s:
@@ -33,5 +30,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
-          git diff --cached --quiet || git commit -m 'Load shared cart sync'
+          git diff --cached --quiet || git commit -m 'Keep current sync loaders'
           git push
