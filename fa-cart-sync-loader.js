@@ -1,6 +1,28 @@
-/* FA_CART_SYNC_LOADER_V4 */
+/* FA_CART_SYNC_LOADER_V5 */
 (function(){
 'use strict';
+
+function installStartupGuard(){
+  var root=document.documentElement;
+  var style=document.getElementById('fa-startup-guard');
+  if(!style){
+    style=document.createElement('style');
+    style.id='fa-startup-guard';
+    style.textContent='html.fa-ui-boot{background:#0e0e0f}html.fa-ui-boot body{visibility:hidden!important}';
+    document.head.appendChild(style);
+  }
+  root.classList.add('fa-ui-boot');
+  var released=false;
+  function reveal(){
+    if(released)return;
+    released=true;
+    root.classList.remove('fa-ui-boot');
+    if(style&&style.parentNode)style.parentNode.removeChild(style);
+  }
+  window.__faRevealUI=reveal;
+  setTimeout(reveal,5000);
+}
+installStartupGuard();
 
 function addLink(rel,href,sizes){
   var link=document.querySelector('link[rel="'+rel+'"]');
