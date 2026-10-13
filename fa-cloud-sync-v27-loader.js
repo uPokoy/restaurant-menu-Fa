@@ -1,6 +1,36 @@
-/* FA_CLOUD_SYNC_UNIQUE_LOADER_V30 */
+/* FA_CLOUD_SYNC_UNIQUE_LOADER_V31 */
 (function(){
   'use strict';
+
+  var FINAL_STYLE_IDS=[
+    'fa-redesign-v3-css',
+    'fa-compact-card-v1-css',
+    'fa-wide-card-v1-css',
+    'fa-scroll-stability-v1-css',
+    'fa-home-sections-v1-css',
+    'fa-home-polish-v1-css',
+    'fa-novelty-card-fix-v1-css'
+  ];
+
+  function revealUi(){
+    var started=Date.now();
+    function check(){
+      var ready=FINAL_STYLE_IDS.every(function(id){
+        var link=document.getElementById(id);
+        return !!(link&&link.sheet);
+      });
+      if(ready||Date.now()-started>1800){
+        requestAnimationFrame(function(){
+          requestAnimationFrame(function(){
+            if(typeof window.__faRevealUI==='function') window.__faRevealUI();
+          });
+        });
+        return;
+      }
+      setTimeout(check,30);
+    }
+    check();
+  }
 
   function loadRedesignCss(){
     if(!document.getElementById('fa-redesign-v3-css')){
@@ -55,13 +85,16 @@
   }
 
   function loadNavPolish(){
-    if(document.getElementById('fa-nav-polish-v1-js')) return;
+    if(document.getElementById('fa-nav-polish-v1-js')){
+      revealUi();
+      return;
+    }
     var n=document.createElement('script');
     n.id='fa-nav-polish-v1-js';
     n.src='fa-nav-polish-v1.js?build=1.0';
     n.async=false;
-    n.onload=function(){console.info('[FA] Navigation polish loaded')};
-    n.onerror=function(){console.warn('[FA] Navigation polish failed to load')};
+    n.onload=function(){console.info('[FA] Navigation polish loaded');revealUi()};
+    n.onerror=function(){console.warn('[FA] Navigation polish failed to load');revealUi()};
     document.head.appendChild(n);
   }
 
