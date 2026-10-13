@@ -141,3 +141,10 @@
 #menuPage .card.featured-card.expanded .add-to-cart{
   order:5!important;
 }
+
+/* Nutrition pills keep their fill but have no outline. */
+#menuPage .nutrition > span,
+.daily-card .nutrition > span{
+  border:none!important;
+  box-shadow:none!important;
+}
