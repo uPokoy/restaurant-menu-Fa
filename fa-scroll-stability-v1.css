@@ -1,0 +1,8 @@
+/* FA_SCROLL_STABILITY_V1 — stable viewport and scrollbar geometry */
+html{
+  overflow-y:scroll!important;
+  scrollbar-gutter:stable!important;
+}
+html.fa-card-wheel-smoothing{
+  scroll-behavior:auto!important;
+}
