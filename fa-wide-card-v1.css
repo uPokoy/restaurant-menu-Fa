@@ -1,0 +1,95 @@
+/* FA_WIDE_CARD_V1 — wide card detail layout */
+
+/* Collapsed wide card keeps the short description visible. */
+#menuPage .card.wide-card:not(.expanded) .desc{
+  display:-webkit-box!important;
+  -webkit-box-orient:vertical!important;
+  -webkit-line-clamp:2!important;
+  overflow:hidden!important;
+  margin-top:8px!important;
+}
+
+/* Expanded wide card mirrors the compact-card information order. */
+#menuPage .card.wide-card.expanded .body{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:flex-start!important;
+}
+#menuPage .card.wide-card.expanded .name{order:1!important}
+#menuPage .card.wide-card.expanded .desc{order:2!important}
+#menuPage .card.wide-card.expanded .ing{order:3!important}
+#menuPage .card.wide-card.expanded .nutrition{
+  order:4!important;
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:nowrap!important;
+  gap:8px!important;
+  width:100%!important;
+  margin:auto 0 0!important;
+  padding-top:12px!important;
+  flex-shrink:0!important;
+}
+#menuPage .card.wide-card.expanded .nutrition > .nutrition-pill{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  min-height:31px!important;
+  padding:0 12px!important;
+  border:0!important;
+  border-radius:999px!important;
+  background:rgba(211,173,116,.08)!important;
+  color:#e5d5bf!important;
+  box-shadow:none!important;
+  box-sizing:border-box!important;
+  white-space:nowrap!important;
+}
+#menuPage .card.wide-card.expanded .nutrition > .nutrition-pill > span{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  margin:0!important;
+  min-width:0!important;
+  width:auto!important;
+  color:inherit!important;
+  white-space:nowrap!important;
+}
+#menuPage .card.wide-card.expanded .nutrition > .add-to-cart.compact-cart-button{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 84px!important;
+  width:84px!important;
+  min-width:84px!important;
+  max-width:84px!important;
+  height:31px!important;
+  min-height:31px!important;
+  padding:0 10px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  border:1px solid rgba(211,173,116,.32)!important;
+  border-radius:999px!important;
+  background:rgba(211,173,116,.12)!important;
+  color:#ead8bd!important;
+  box-shadow:none!important;
+  line-height:1!important;
+  cursor:pointer!important;
+}
+#menuPage .card.wide-card.expanded .nutrition > .add-to-cart.compact-cart-button:hover{
+  background:rgba(211,173,116,.22)!important;
+  border-color:rgba(211,173,116,.48)!important;
+}
+#menuPage .card.wide-card .compact-cart-button svg{
+  display:block!important;
+  width:17px!important;
+  height:17px!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:1.8!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+  pointer-events:none!important;
+}
