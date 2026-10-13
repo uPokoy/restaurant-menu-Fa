@@ -1,0 +1,202 @@
+/* FA_ADMIN_POLISH_V1 — add/edit tab matches the current restaurant UI */
+#addPage.panel{
+  width:min(1160px,calc(100% - 36px));
+  max-width:1160px;
+  margin:18px auto 48px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+
+#addPage>h2{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:0 0 16px!important;
+  padding:0 0 10px!important;
+  color:var(--v3-text,#f4eee6);
+  font-size:25px;
+  line-height:1.2;
+  font-weight:800;
+  letter-spacing:.1px;
+  text-shadow:0 2px 8px rgba(0,0,0,.45);
+}
+#addPage>h2::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg,rgba(211,173,116,.44),rgba(211,173,116,0));
+}
+
+#addPage .add-layout{gap:16px!important}
+#addPage .add-card{
+  padding:20px 22px!important;
+  border:1px solid rgba(255,255,255,.11)!important;
+  border-radius:16px!important;
+  background:var(--v3-card,rgba(18,18,18,.92))!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.22)!important;
+  -webkit-backdrop-filter:blur(10px)!important;
+  backdrop-filter:blur(10px)!important;
+}
+#addPage .add-card:hover{border-color:rgba(211,173,116,.18)!important}
+#addPage .add-card h3,
+#addPage #formTitle{
+  margin:0 0 16px!important;
+  color:var(--v3-text,#f4eee6)!important;
+  font:800 20px/1.25 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
+
+#addPage label{
+  margin:13px 0 6px!important;
+  color:var(--v3-muted,#b9b0a6)!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  letter-spacing:.15px;
+}
+#addPage input:not([type=range]),
+#addPage select,
+#addPage textarea{
+  min-height:46px;
+  padding:11px 13px!important;
+  border:1px solid rgba(255,255,255,.13)!important;
+  border-radius:11px!important;
+  background:rgba(13,13,13,.72)!important;
+  color:var(--v3-text,#f4eee6)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.02)!important;
+  transition:border-color .16s ease,box-shadow .16s ease,background .16s ease;
+}
+#addPage textarea{min-height:96px!important;line-height:1.5}
+#addPage input:not([type=range])::placeholder,
+#addPage textarea::placeholder{color:rgba(185,176,166,.48)!important}
+#addPage input:not([type=range]):focus,
+#addPage select:focus,
+#addPage textarea:focus{
+  outline:none!important;
+  border-color:rgba(211,173,116,.55)!important;
+  background:rgba(16,16,16,.88)!important;
+  box-shadow:0 0 0 3px rgba(211,173,116,.10)!important;
+}
+#addPage select option{background:#151515;color:#f4eee6}
+
+#addPage input[type=file]{
+  padding:7px!important;
+  cursor:pointer;
+  color:var(--v3-muted,#b9b0a6)!important;
+}
+#addPage input[type=file]::file-selector-button{
+  margin-right:11px;
+  padding:8px 12px;
+  border:1px solid rgba(211,173,116,.26);
+  border-radius:9px;
+  background:rgba(211,173,116,.12);
+  color:#ead7ba;
+  font:700 13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  cursor:pointer;
+}
+#addPage input[type=file]::file-selector-button:hover{background:rgba(211,173,116,.20)}
+
+#addPage .nutrition-inputs{gap:10px!important}
+#addPage .actions{gap:9px!important;margin-top:15px!important}
+#addPage .btn{
+  min-height:40px;
+  padding:8px 14px!important;
+  border:1px solid rgba(255,255,255,.13)!important;
+  border-radius:11px!important;
+  background:rgba(35,33,31,.72)!important;
+  color:var(--v3-text,#f4eee6)!important;
+  box-shadow:0 3px 12px rgba(0,0,0,.13)!important;
+  font-weight:700!important;
+  transition:transform .16s ease,background .16s ease,border-color .16s ease!important;
+}
+#addPage .btn:hover{
+  transform:translateY(-1px);
+  border-color:rgba(211,173,116,.30)!important;
+  background:rgba(47,43,39,.82)!important;
+}
+#addPage .btn.primary{
+  border-color:rgba(211,173,116,.42)!important;
+  background:rgba(211,173,116,.88)!important;
+  color:#17120f!important;
+}
+#addPage .btn.primary:hover{background:rgba(224,188,132,.96)!important}
+
+#addPage .small{color:var(--v3-muted,#b9b0a6)!important;line-height:1.45}
+#addPage .category-actions{margin-top:14px!important}
+
+#addPage details.collapsible-list{padding:0!important}
+#addPage details.collapsible-list>summary{
+  padding:17px 20px!important;
+  color:var(--v3-text,#f4eee6)!important;
+  font:800 18px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  transition:background .16s ease,color .16s ease;
+}
+#addPage details.collapsible-list>summary:hover{background:rgba(255,255,255,.025)}
+#addPage details.collapsible-list>summary::after{
+  right:19px!important;
+  top:50%;
+  transform:translateY(-50%);
+  color:#d8b37d;
+  font-size:21px!important;
+}
+#addPage details.collapsible-list[open]>summary{
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+#addPage details.collapsible-list>#catList,
+#addPage details.collapsible-list>#dishAdmin{padding:4px 20px 10px!important}
+#addPage .admin-item{
+  padding:13px 0!important;
+  border-bottom-color:rgba(255,255,255,.07)!important;
+}
+#addPage .admin-item b{color:var(--v3-text,#f4eee6);font-size:15px}
+#addPage .admin-item .actions{margin-top:0!important}
+
+#addPage .dish-photo-editor{
+  margin-top:16px!important;
+  padding:18px!important;
+  border:1px solid rgba(211,173,116,.18)!important;
+  border-radius:15px!important;
+  background:rgba(10,10,10,.38)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.02)!important;
+}
+#addPage .dish-photo-editor-head{margin-bottom:16px!important}
+#addPage .dish-photo-editor-head h4{
+  color:var(--v3-text,#f4eee6)!important;
+  font-size:18px!important;
+}
+#addPage .dish-photo-editor-item{
+  padding:14px!important;
+  border:1px solid rgba(255,255,255,.10)!important;
+  border-radius:14px!important;
+  background:rgba(18,18,18,.72)!important;
+}
+#addPage .dish-photo-editor-label{color:#ead7ba!important;font-size:14px!important}
+#addPage .dish-photo-preview-card{
+  border-color:rgba(255,255,255,.10)!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.24)!important;
+}
+#addPage .dish-photo-preview-body{background:rgba(18,18,18,.96)!important}
+#addPage .dish-photo-preview-title{color:var(--v3-text,#f4eee6)!important}
+#addPage .dish-photo-editor-control label{color:var(--v3-muted,#b9b0a6)!important}
+#addPage .dish-photo-editor-control input[type=range]{accent-color:#d3ad74!important}
+#addPage .dish-photo-editor-value{color:#d9c5a6!important}
+#addPage .dish-photo-editor-tip{color:var(--v3-muted,#b9b0a6)!important}
+
+@media(max-width:760px){
+  #addPage.panel{width:calc(100% - 22px);margin-top:12px!important}
+  #addPage .add-card{padding:17px!important}
+  #addPage>h2{font-size:23px}
+  #addPage .admin-item{align-items:flex-start}
+}
+
+@media(max-width:560px){
+  #addPage.panel{width:calc(100% - 18px)}
+  #addPage .add-card{padding:15px!important;border-radius:14px!important}
+  #addPage .actions .btn{flex:1 1 auto}
+  #addPage .admin-item{flex-direction:column;align-items:stretch}
+  #addPage .admin-item .actions{width:100%}
+  #addPage .admin-item .actions .btn{flex:1}
+}
