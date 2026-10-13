@@ -77,3 +77,29 @@
   stroke-linejoin:round!important;
   pointer-events:none!important;
 }
+
+/* Featured tall card: always show KBJU directly under the title when expanded. */
+#menuPage .card.featured-card.expanded .body{
+  display:flex!important;
+  flex-direction:column!important;
+}
+#menuPage .card.featured-card.expanded .name{
+  order:1!important;
+}
+#menuPage .card.featured-card.expanded .nutrition{
+  order:2!important;
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:wrap!important;
+  gap:7px!important;
+  margin:9px 0 0!important;
+}
+#menuPage .card.featured-card.expanded .desc{
+  order:3!important;
+}
+#menuPage .card.featured-card.expanded .ing{
+  order:4!important;
+}
+#menuPage .card.featured-card.expanded .add-to-cart{
+  order:5!important;
+}
