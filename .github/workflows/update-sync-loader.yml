@@ -18,9 +18,8 @@ jobs:
           s = p.read_text(encoding='utf-8')
           cloud = 'fa-cloud-sync-v27-loader.js'
           cart = 'fa-cart-sync-loader.js'
-          cart_tag = '<script src="fa-cart-sync-loader.js?build=1.2"></script>'
-          if cloud not in s:
-              raise SystemExit('current cloud sync loader reference not found')
+          cart_tag = '<script src="fa-cart-sync-loader.js?build=1.3"></script>'
+          cloud_tag = '<script src="fa-cloud-sync-v27-loader.js?build=30.1"></script>'
           if cart not in s:
               marker = '<head>'
               if marker not in s:
@@ -28,6 +27,9 @@ jobs:
               s = s.replace(marker, marker + '\n' + cart_tag, 1)
           else:
               s = re.sub(r'<script src="fa-cart-sync-loader\.js(?:\?build=[^"]+)?"></script>', cart_tag, s, count=1)
+          if cloud not in s:
+              raise SystemExit('current cloud sync loader reference not found')
+          s = re.sub(r'<script src="fa-cloud-sync-v27-loader\.js(?:\?build=[^"]+)?"></script>', cloud_tag, s, count=1)
           p.write_text(s, encoding='utf-8')
       - name: Commit index change
         run: |
