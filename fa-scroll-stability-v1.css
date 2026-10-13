@@ -1,7 +1,19 @@
-/* FA_SCROLL_STABILITY_V1 — stable viewport and scrollbar geometry */
+/* FA_SCROLL_STABILITY_V1 — stable viewport with hidden page scrollbar */
 html{
   overflow-y:scroll!important;
-  scrollbar-gutter:stable!important;
+  scrollbar-gutter:auto!important;
+  scrollbar-width:none!important;
+  -ms-overflow-style:none!important;
+}
+body{
+  scrollbar-width:none!important;
+  -ms-overflow-style:none!important;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar{
+  width:0!important;
+  height:0!important;
+  display:none!important;
 }
 html.fa-card-wheel-smoothing{
   scroll-behavior:auto!important;
