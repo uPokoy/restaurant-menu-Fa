@@ -15,78 +15,6 @@
     try{return Array.isArray(dishes)?dishes:[];}catch(e){return [];}
   }
 
-  function getCategories(){
-    try{return Array.isArray(cats)?cats:[];}catch(e){return [];}
-  }
-
-  function buildCleanNav(){
-    var nav=document.querySelector('nav');
-    if(!nav) return;
-    nav.innerHTML='';
-
-    var main=document.createElement('button');
-    main.textContent='Главная';
-    main.className='active';
-    main.onclick=function(){showMenu(main,'all');};
-    nav.appendChild(main);
-
-    getCategories().forEach(function(category){
-      var button=document.createElement('button');
-      button.textContent=category;
-      button.onclick=function(){showMenu(button,category);};
-      nav.appendChild(button);
-    });
-
-    var add=document.createElement('button');
-    add.textContent='➕';
-    add.title='Добавить';
-    add.setAttribute('aria-label','Добавить');
-    add.onclick=function(){showAdd(add);};
-    nav.appendChild(add);
-
-    var cart=document.createElement('button');
-    cart.className='cart-btn';
-    cart.id='cartNav';
-    cart.onclick=function(){showCart(cart);};
-    nav.appendChild(cart);
-
-    var appearance=document.createElement('button');
-    appearance.textContent='⚙️';
-    appearance.className='settings-gear';
-    appearance.title='Настройки';
-    appearance.setAttribute('aria-label','Настройки');
-    appearance.onclick=function(){showAppearance(appearance);};
-    nav.appendChild(appearance);
-
-    try{updateCartBadge();}catch(e){}
-    try{applyNavTransparency();}catch(e){}
-  }
-
-  function installCleanNav(){
-    try{
-      window.renderNav=buildCleanNav;
-      buildCleanNav();
-    }catch(e){
-      console.warn('[FA] Clean navigation install skipped',e);
-    }
-  }
-
-  function normalizeShowAdd(){
-    try{
-      if(typeof window.showAdd!=='function'||window.showAdd.__faStableAddTarget) return;
-      var original=window.showAdd;
-      var wrapped=function(btn){
-        var add=document.querySelector('nav button[title="Добавить"]');
-        return original.call(this,add||btn);
-      };
-      wrapped.__faStableAddTarget=true;
-      if(original.__faAdminSessionWrapped) wrapped.__faAdminSessionWrapped=true;
-      window.showAdd=wrapped;
-    }catch(e){
-      console.warn('[FA] Stable Add target skipped',e);
-    }
-  }
-
   function pickRandom(category,list){
     var matches=list.filter(function(d){return d&&d.cat===category;});
     return matches.length?matches[Math.floor(Math.random()*matches.length)]:null;
@@ -97,8 +25,8 @@
     var saved=null;
     try{saved=JSON.parse(localStorage.getItem('dailyMenuSelection')||'null');}catch(e){saved=null;}
 
-    var soup=saved&&saved.soupId?list.find(function(d){return d&&d.id===saved.soupId;})||pickRandom('Супы',list):pickRandom('Супы',list);
-    var main=saved&&saved.mainId?list.find(function(d){return d&&d.id===saved.mainId;})||pickRandom('Вторые блюда',list):pickRandom('Вторые блюда',list);
+    var soup=saved&&saved.soupId?list.find(function(d){return d&&String(d.id)===String(saved.soupId);})||pickRandom('Супы',list):pickRandom('Супы',list);
+    var main=saved&&saved.mainId?list.find(function(d){return d&&String(d.id)===String(saved.mainId);})||pickRandom('Вторые блюда',list):pickRandom('Вторые блюда',list);
 
     if(!saved||!saved.soupId||!saved.mainId||!soup||!main){
       try{
@@ -253,38 +181,24 @@
   }
 
   function wrapDrawMenu(){
-    try{
-      if(typeof window.drawMenu!=='function'||window.drawMenu.__faHomeWrapped) return;
-      var original=window.drawMenu;
-      var wrapped=function(filter){
-        var result=original.apply(this,arguments);
-        var activeFilter=filter;
-        if(activeFilter===undefined||activeFilter===null){
-          try{activeFilter=currentFilter;}catch(e){activeFilter='all';}
-        }
-        if(activeFilter==='all') renderHomeSections();
-        return result;
-      };
-      wrapped.__faHomeWrapped=true;
-      window.drawMenu=wrapped;
-    }catch(e){
-      console.warn('[FA] Home drawMenu wrap skipped',e);
-    }
-  }
-
-  function init(){
-    installCleanNav();
-    normalizeShowAdd();
-    wrapDrawMenu();
-    try{
-      if(typeof currentFilter!=='undefined'&&currentFilter==='all'&&!getMenuPage().classList.contains('hidden')){
-        renderHomeSections();
+    if(typeof window.drawMenu!=='function'||window.drawMenu.__faHomeWrapped) return;
+    var original=window.drawMenu;
+    var wrapped=function(filter){
+      var result=original.apply(this,arguments);
+      var activeFilter=filter;
+      if(activeFilter===undefined||activeFilter===null){
+        try{activeFilter=currentFilter;}catch(e){activeFilter='all';}
       }
-    }catch(e){
-      renderHomeSections();
-    }
-    console.info('[FA] Home sections ready');
+      if(activeFilter==='all') renderHomeSections();
+      return result;
+    };
+    wrapped.__faHomeWrapped=true;
+    window.drawMenu=wrapped;
   }
 
-  init();
+  wrapDrawMenu();
+  try{
+    if(typeof currentFilter!=='undefined'&&currentFilter==='all'&&!getMenuPage().classList.contains('hidden')) renderHomeSections();
+  }catch(e){renderHomeSections();}
+  console.info('[FA] Home sections ready');
 })();
