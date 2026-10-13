@@ -5,6 +5,7 @@
   window.__FA_REDESIGN_V3__=true;
 
   var cartSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 9.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20 7H6"/><circle cx="10" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg>';
+  var activeExpandedKey=null;
 
   function localDayNumber(){
     var now=new Date();
@@ -219,6 +220,14 @@
     protectDishImages(document);
   }
 
+  function closeExpandedExcept(keep){
+    document.querySelectorAll('.card.expanded,.daily-card.expanded').forEach(function(card){
+      if(card===keep) return;
+      card.classList.remove('expanded');
+      card.setAttribute('aria-expanded','false');
+    });
+  }
+
   function centerCard(card){
     if(!card||!card.isConnected||!card.classList.contains('expanded')) return;
     var rect=card.getBoundingClientRect();
@@ -239,20 +248,60 @@
     },30);
   }
 
-  function bindCentering(){
+  function bindInteractions(){
     document.addEventListener('click',function(event){
       if(event.target.closest('button,input,select,textarea,a')) return;
-      var card=event.target.closest('#menuPage .card');
-      if(!card) return;
-      scheduleCenter(card);
+
+      var card=event.target.closest('.card,.daily-card');
+      if(!card){
+        closeExpandedExcept(null);
+        activeExpandedKey=null;
+        return;
+      }
+
+      closeExpandedExcept(card);
+      if(card.classList.contains('expanded')){
+        activeExpandedKey=card.dataset.faDishKey||null;
+        if(card.matches('#menuPage .card')) scheduleCenter(card);
+      }else{
+        activeExpandedKey=null;
+      }
     });
 
     document.addEventListener('keydown',function(event){
       if(event.key!=='Enter'&&event.key!==' ') return;
-      var card=event.target.closest('#menuPage .card');
+      var card=event.target.closest('.card,.daily-card');
       if(!card||event.target!==card) return;
-      scheduleCenter(card);
+      window.setTimeout(function(){
+        closeExpandedExcept(card.classList.contains('expanded')?card:null);
+        activeExpandedKey=card.classList.contains('expanded')?(card.dataset.faDishKey||null):null;
+        if(card.classList.contains('expanded')&&card.matches('#menuPage .card')) scheduleCenter(card);
+      },0);
     });
+
+    document.addEventListener('wheel',function(event){
+      var card=event.target.closest('#menuPage .card.expanded,.daily-card.expanded');
+      if(!card) return;
+      var factor=1;
+      if(event.deltaMode===1) factor=16;
+      else if(event.deltaMode===2) factor=window.innerHeight;
+      event.preventDefault();
+      window.scrollBy({top:event.deltaY*factor,left:0,behavior:'auto'});
+    },{passive:false});
+  }
+
+  function restoreExpandedCard(key){
+    if(!key) return false;
+    var cards=document.querySelectorAll('#menuPage .card[data-fa-dish-key]');
+    for(var i=0;i<cards.length;i++){
+      if(cards[i].dataset.faDishKey===String(key)){
+        closeExpandedExcept(cards[i]);
+        cards[i].classList.add('expanded');
+        cards[i].setAttribute('aria-expanded','true');
+        return true;
+      }
+    }
+    return false;
   }
 
   function wrapDrawMenu(){
@@ -260,8 +309,14 @@
       if(typeof window.drawMenu!=='function'||window.drawMenu.__faV3Wrapped) return;
       var original=window.drawMenu;
       var wrapped=function(){
+        var openCard=document.querySelector('#menuPage .card.expanded');
+        var preserveKey=(openCard&&openCard.dataset.faDishKey)||activeExpandedKey;
         var result=original.apply(this,arguments);
         decorateMenu();
+        if(preserveKey){
+          if(restoreExpandedCard(preserveKey)) activeExpandedKey=String(preserveKey);
+          else activeExpandedKey=null;
+        }
         return result;
       };
       wrapped.__faV3Wrapped=true;
@@ -277,7 +332,7 @@
     }
     wrapDrawMenu();
     decorateMenu();
-    bindCentering();
+    bindInteractions();
     window.addEventListener('pageshow',function(){decorateMenu();});
     console.info('[FA] Redesign V3 ready');
   }catch(e){
