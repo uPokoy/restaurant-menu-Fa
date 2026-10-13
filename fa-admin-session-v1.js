@@ -12,7 +12,7 @@
 
   async function verifyAndPrompt(){
     const cloud=window.restaurantMenuCloudSync;
-    if(!cloud || typeof cloud.adminCheck!=='function') return true;
+    if(!cloud||typeof cloud.adminCheck!=='function') return true;
 
     let valid=false;
     try{valid=await cloud.adminCheck();}catch(e){valid=false;}
@@ -25,8 +25,7 @@
 
   function wrap(name){
     const current=window[name];
-    if(typeof current!=='function' || current.__faAdminSessionWrapped) return;
-
+    if(typeof current!=='function'||current.__faAdminSessionWrapped) return;
     const wrapped=async function(){
       if(!(await verifyAndPrompt())) return;
       return current.apply(this,arguments);
@@ -35,25 +34,17 @@
     window[name]=wrapped;
   }
 
-  function install(){
-    ['showAdd','addCategory','deleteCategory','saveDish','editDish','deleteDish'].forEach(wrap);
-  }
-
   async function checkActiveSession(){
     const cloud=window.restaurantMenuCloudSync;
-    if(!cloud || typeof cloud.hasAdminSession!=='function' || typeof cloud.adminCheck!=='function') return;
+    if(!cloud||typeof cloud.hasAdminSession!=='function'||typeof cloud.adminCheck!=='function') return;
     if(!cloud.hasAdminSession()){
       lockAdmin();
       return;
     }
-    try{
-      if(!(await cloud.adminCheck())) lockAdmin();
-    }catch(e){}
+    try{if(!(await cloud.adminCheck())) lockAdmin();}catch(e){}
   }
 
-  install();
-  setTimeout(install,500);
-  setTimeout(install,1500);
+  ['showAdd','addCategory','deleteCategory','saveDish','editDish','deleteDish'].forEach(wrap);
   setInterval(checkActiveSession,CHECK_INTERVAL);
   window.addEventListener('focus',checkActiveSession);
   document.addEventListener('visibilitychange',function(){if(!document.hidden) checkActiveSession();});
