@@ -168,6 +168,9 @@
   background-position:13px center!important;
   background-size:17px 17px!important;
 }
+#addPage #dishAdmin .admin-item.fa-search-hidden{
+  display:none!important;
+}
 #addPage .dish-search-empty{
   padding:20px 0 16px;
   color:var(--v3-muted,#b9b0a6);
