@@ -1,0 +1,339 @@
+/* FA_HOME_POLISH_V1 — final home novelty layouts + quiet controls */
+
+/* Keep special home sections visually tight. */
+#menuPage .home-new-section{
+  margin-bottom:28px!important;
+}
+#menuPage .home-daily-section{
+  margin-top:28px!important;
+}
+
+/* Daily refresh: intentionally quiet and secondary. */
+#menuPage .home-daily-refresh{
+  flex:0 0 27px!important;
+  width:27px!important;
+  height:27px!important;
+  min-height:27px!important;
+  padding:6px!important;
+  border:1px solid rgba(211,173,116,.10)!important;
+  border-radius:9px!important;
+  background:rgba(20,18,16,.18)!important;
+  color:rgba(234,216,189,.42)!important;
+  box-shadow:none!important;
+  opacity:.58!important;
+}
+#menuPage .home-daily-refresh:hover:not(:disabled){
+  opacity:.82!important;
+  color:rgba(234,216,189,.72)!important;
+  background:rgba(211,173,116,.06)!important;
+  border-color:rgba(211,173,116,.18)!important;
+}
+#menuPage .home-daily-refresh:disabled{
+  opacity:.20!important;
+}
+
+/* Desktop novelty layouts. */
+@media(min-width:901px){
+  /* 1 novelty = true wide card, identical logic to ordinary wide menu cards. */
+  #menuPage .grid.home-new-grid-count-1{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    grid-auto-rows:278px!important;
+    gap:16px!important;
+  }
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single{
+    grid-column:1 / -1!important;
+    grid-row:auto!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr)!important;
+    width:100%!important;
+    height:278px!important;
+    min-height:278px!important;
+    max-height:278px!important;
+  }
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single .photo,
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single:not(.expanded) .photo,
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single.expanded .photo{
+    position:relative!important;
+    inset:auto!important;
+    display:block!important;
+    width:100%!important;
+    height:278px!important;
+    min-height:278px!important;
+    object-fit:cover!important;
+    filter:none!important;
+  }
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single .body,
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single:not(.expanded) .body,
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single.expanded .body{
+    position:relative!important;
+    inset:auto!important;
+    z-index:2!important;
+    width:auto!important;
+    height:278px!important;
+    min-height:0!important;
+    max-height:278px!important;
+    box-sizing:border-box!important;
+    padding:18px 22px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    justify-content:center!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    background:var(--v3-card)!important;
+  }
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single:not(.expanded) .desc{
+    display:-webkit-box!important;
+    -webkit-box-orient:vertical!important;
+    -webkit-line-clamp:3!important;
+    overflow:hidden!important;
+    margin-top:9px!important;
+  }
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single:not(.expanded) .ing,
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single:not(.expanded) .nutrition,
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single:not(.expanded) .add-to-cart{
+    display:none!important;
+  }
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single.expanded .name{order:1!important}
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single.expanded .desc{order:2!important;display:block!important}
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single.expanded .ing{order:3!important;display:block!important}
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single.expanded .nutrition{
+    order:4!important;
+    display:flex!important;
+    align-items:center!important;
+    flex-wrap:nowrap!important;
+    gap:8px!important;
+    width:100%!important;
+    margin:auto 0 0!important;
+    padding-top:12px!important;
+  }
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single.expanded .nutrition > .nutrition-pill{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:8px!important;
+    flex:1 1 auto!important;
+    min-width:0!important;
+    min-height:31px!important;
+    padding:0 12px!important;
+    border:0!important;
+    border-radius:999px!important;
+    background:rgba(211,173,116,.08)!important;
+    color:#e5d5bf!important;
+    box-shadow:none!important;
+    white-space:nowrap!important;
+  }
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single.expanded .nutrition > .nutrition-pill > span{
+    background:transparent!important;
+    border:0!important;
+    box-shadow:none!important;
+    padding:0!important;
+    margin:0!important;
+    min-width:0!important;
+    width:auto!important;
+    color:inherit!important;
+    white-space:nowrap!important;
+  }
+  #menuPage .grid.home-new-grid-count-1 > .card.home-new-single.expanded .nutrition > .compact-cart-button{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    flex:0 0 84px!important;
+    width:84px!important;
+    min-width:84px!important;
+    max-width:84px!important;
+    height:31px!important;
+    min-height:31px!important;
+    padding:0 10px!important;
+    margin:0!important;
+    border:1px solid rgba(211,173,116,.32)!important;
+    border-radius:999px!important;
+    background:rgba(211,173,116,.12)!important;
+    color:#ead8bd!important;
+    box-shadow:none!important;
+  }
+
+  /* 2 novelties = two equal normal cards. */
+  #menuPage .grid.home-new-grid-count-2{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-auto-rows:278px!important;
+    gap:16px!important;
+  }
+  #menuPage .grid.home-new-grid-count-2 > .card.home-new-pair{
+    grid-column:auto!important;
+    grid-row:auto!important;
+    width:100%!important;
+    height:278px!important;
+    min-height:278px!important;
+    max-height:278px!important;
+  }
+  #menuPage .grid.home-new-grid-count-2 > .card.home-new-pair:not(.expanded) .photo{height:210px!important}
+  #menuPage .grid.home-new-grid-count-2 > .card.home-new-pair:not(.expanded) .body{
+    height:68px!important;
+    min-height:68px!important;
+    padding:12px 16px!important;
+    display:flex!important;
+    align-items:center!important;
+  }
+
+  /* 3–5 novelties = one tall card on the left + up to four small cards on the right. */
+  #menuPage .grid.home-new-grid-count-3,
+  #menuPage .grid.home-new-grid-count-4,
+  #menuPage .grid.home-new-grid-count-5{
+    display:grid!important;
+    grid-template-columns:minmax(0,1.18fr) repeat(2,minmax(0,1fr))!important;
+    grid-template-rows:278px 278px!important;
+    grid-auto-rows:278px!important;
+    grid-auto-flow:row!important;
+    gap:16px!important;
+    align-items:stretch!important;
+  }
+  #menuPage .grid.home-new-grid-count-3 > .card.home-new-featured,
+  #menuPage .grid.home-new-grid-count-4 > .card.home-new-featured,
+  #menuPage .grid.home-new-grid-count-5 > .card.home-new-featured{
+    grid-column:1!important;
+    grid-row:1 / span 2!important;
+    width:100%!important;
+    height:572px!important;
+    min-height:572px!important;
+    max-height:572px!important;
+    align-self:stretch!important;
+  }
+  #menuPage .grid.home-new-grid-count-3 > .card.home-new-featured:not(.expanded) .photo,
+  #menuPage .grid.home-new-grid-count-4 > .card.home-new-featured:not(.expanded) .photo,
+  #menuPage .grid.home-new-grid-count-5 > .card.home-new-featured:not(.expanded) .photo{
+    height:504px!important;
+    min-height:504px!important;
+  }
+  #menuPage .grid.home-new-grid-count-3 > .card.home-new-featured:not(.expanded) .body,
+  #menuPage .grid.home-new-grid-count-4 > .card.home-new-featured:not(.expanded) .body,
+  #menuPage .grid.home-new-grid-count-5 > .card.home-new-featured:not(.expanded) .body{
+    height:68px!important;
+    min-height:68px!important;
+    padding:12px 18px!important;
+    display:flex!important;
+    align-items:center!important;
+  }
+  #menuPage .grid.home-new-grid-count-3 > .card.home-new-small,
+  #menuPage .grid.home-new-grid-count-4 > .card.home-new-small,
+  #menuPage .grid.home-new-grid-count-5 > .card.home-new-small{
+    grid-column:auto!important;
+    grid-row:auto!important;
+    width:100%!important;
+    height:278px!important;
+    min-height:278px!important;
+    max-height:278px!important;
+  }
+  #menuPage .grid.home-new-grid-count-3 > .card.home-new-small:not(.expanded) .photo,
+  #menuPage .grid.home-new-grid-count-4 > .card.home-new-small:not(.expanded) .photo,
+  #menuPage .grid.home-new-grid-count-5 > .card.home-new-small:not(.expanded) .photo{
+    height:210px!important;
+  }
+  #menuPage .grid.home-new-grid-count-3 > .card.home-new-small:not(.expanded) .body,
+  #menuPage .grid.home-new-grid-count-4 > .card.home-new-small:not(.expanded) .body,
+  #menuPage .grid.home-new-grid-count-5 > .card.home-new-small:not(.expanded) .body{
+    height:68px!important;
+    min-height:68px!important;
+    padding:12px 16px!important;
+    display:flex!important;
+    align-items:center!important;
+  }
+
+  /* Expanded mosaic cards stay inside their fixed tile. */
+  #menuPage .grid.home-new-grid-count-2 > .card.expanded .photo,
+  #menuPage .grid.home-new-grid-count-3 > .card.expanded .photo,
+  #menuPage .grid.home-new-grid-count-4 > .card.expanded .photo,
+  #menuPage .grid.home-new-grid-count-5 > .card.expanded .photo{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    object-fit:cover!important;
+    filter:brightness(.34)!important;
+  }
+  #menuPage .grid.home-new-grid-count-2 > .card.expanded .body,
+  #menuPage .grid.home-new-grid-count-3 > .card.expanded .body,
+  #menuPage .grid.home-new-grid-count-4 > .card.expanded .body,
+  #menuPage .grid.home-new-grid-count-5 > .card.expanded .body{
+    position:absolute!important;
+    inset:0!important;
+    z-index:2!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+    padding:15px 16px 18px!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    display:flex!important;
+    flex-direction:column!important;
+    background:linear-gradient(180deg,rgba(14,14,14,.62),rgba(14,14,14,.95) 34%,rgba(14,14,14,.99))!important;
+  }
+}
+
+/* Utility buttons belong to the same visual language as category tabs. */
+nav button.fa-nav-utility{
+  position:relative!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:38px!important;
+  width:38px!important;
+  height:38px!important;
+  min-height:38px!important;
+  padding:0!important;
+  border:1px solid rgba(211,173,116,.16)!important;
+  border-radius:11px!important;
+  background:linear-gradient(180deg,rgba(31,29,27,.72),rgba(20,19,18,.76))!important;
+  color:rgba(226,190,139,.82)!important;
+  box-shadow:0 3px 12px rgba(0,0,0,.16)!important;
+  text-shadow:none!important;
+  -webkit-text-stroke:0!important;
+}
+nav button.fa-nav-utility:hover{
+  transform:translateY(-1px)!important;
+  color:#e4bd85!important;
+  border-color:rgba(211,173,116,.30)!important;
+  background:linear-gradient(180deg,rgba(42,38,34,.78),rgba(27,24,22,.82))!important;
+  box-shadow:0 5px 15px rgba(0,0,0,.20)!important;
+}
+nav button.fa-nav-utility:active{
+  transform:none!important;
+}
+nav button.fa-nav-utility .fa-nav-icon{
+  display:block!important;
+  width:18px!important;
+  height:18px!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:1.7!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+  pointer-events:none!important;
+}
+nav button.fa-nav-add{
+  margin-left:14px!important;
+}
+nav button.fa-nav-cart .cart-count{
+  position:absolute!important;
+  top:-5px!important;
+  right:-6px!important;
+  display:grid!important;
+  place-items:center!important;
+  min-width:18px!important;
+  height:18px!important;
+  padding:0 4px!important;
+  margin:0!important;
+  border:1px solid rgba(22,18,14,.82)!important;
+  border-radius:999px!important;
+  background:#c99556!important;
+  color:#17120f!important;
+  font-size:10px!important;
+  line-height:1!important;
+  font-weight:800!important;
+  box-shadow:0 2px 8px rgba(0,0,0,.30)!important;
+}
+
+@media(max-width:900px){
+  nav button.fa-nav-add{margin-left:8px!important}
+}
