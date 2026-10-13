@@ -1,0 +1,326 @@
+/* FA_REDESIGN_V3 — stable dark restaurant layout */
+:root{
+  --v3-accent:#d3ad74;
+  --v3-text:#f4eee6;
+  --v3-muted:#b9b0a6;
+  --v3-card:rgba(18,18,18,.92);
+  --v3-line:rgba(255,255,255,.11);
+}
+
+body.theme-dark::after{
+  background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.12) 45%,rgba(0,0,0,.20))!important;
+}
+
+header{
+  padding:14px 18px 11px!important;
+  background:linear-gradient(180deg,rgba(7,7,7,.76),rgba(7,7,7,.50))!important;
+  border-bottom:1px solid rgba(255,255,255,.09)!important;
+  box-shadow:none!important;
+}
+header h1{
+  font-size:38px!important;
+  line-height:1!important;
+  letter-spacing:2.5px!important;
+  color:#fff!important;
+  text-shadow:0 2px 12px rgba(0,0,0,.45)!important;
+}
+header p{
+  margin-top:5px!important;
+  color:rgba(255,255,255,.66)!important;
+  font-size:12px!important;
+}
+
+nav{
+  width:min(1160px,calc(100% - 28px))!important;
+  margin:8px auto 0!important;
+  padding:6px 0!important;
+  justify-content:center!important;
+  gap:6px!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+nav button{
+  min-height:38px!important;
+  padding:8px 13px!important;
+  border-radius:11px!important;
+  box-shadow:0 3px 12px rgba(0,0,0,.12)!important;
+  font-size:14px!important;
+  -webkit-text-stroke:0!important;
+  transition:background .18s ease,border-color .18s ease,transform .18s ease!important;
+}
+nav button:hover{transform:translateY(-1px)!important}
+nav button[title="Добавить"]{margin-left:14px!important}
+nav button[title="Добавить"],nav .cart-btn,nav .settings-gear{
+  min-width:39px!important;
+  width:39px!important;
+  height:38px!important;
+  padding:7px!important;
+  border-radius:12px!important;
+}
+
+main{
+  max-width:1160px!important;
+  padding:22px 18px 48px!important;
+}
+#menuPage section{
+  margin:28px 0 38px!important;
+}
+#menuPage section h2{
+  display:flex!important;
+  align-items:center!important;
+  gap:12px!important;
+  width:100%!important;
+  padding:0 0 9px!important;
+  margin:0 0 15px!important;
+  border-radius:0!important;
+  background:transparent!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  font-size:25px!important;
+  color:var(--v3-text)!important;
+  text-shadow:0 2px 8px rgba(0,0,0,.50)!important;
+}
+#menuPage section h2::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg,rgba(211,173,116,.44),rgba(211,173,116,0));
+}
+
+#menuPage .grid{
+  gap:16px!important;
+  align-items:start!important;
+  overflow-anchor:none!important;
+}
+#menuPage .card,
+.daily-card{
+  background:var(--v3-card)!important;
+  border:1px solid var(--v3-line)!important;
+  border-radius:16px!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.22)!important;
+  overflow:hidden!important;
+  transform:none!important;
+  will-change:auto!important;
+  -webkit-backdrop-filter:blur(10px)!important;
+  backdrop-filter:blur(10px)!important;
+  overflow-anchor:none!important;
+}
+#menuPage .card:hover,.daily-card:hover{
+  transform:translateY(-2px)!important;
+  border-color:rgba(211,173,116,.25)!important;
+  box-shadow:0 14px 32px rgba(0,0,0,.28)!important;
+}
+#menuPage .card.expanded,.daily-card.expanded{
+  transform:none!important;
+  border-color:rgba(211,173,116,.30)!important;
+  box-shadow:0 16px 38px rgba(0,0,0,.34)!important;
+}
+
+#menuPage .card .photo{
+  background:#151515!important;
+  transition:filter .18s ease!important;
+}
+#menuPage .card .body{
+  background:var(--v3-card)!important;
+}
+#menuPage .card .name,
+.daily-card .name{
+  font-size:18px!important;
+  line-height:1.28!important;
+  color:var(--v3-text)!important;
+  text-shadow:none!important;
+}
+#menuPage .card .desc,.daily-card .desc{
+  color:var(--v3-muted)!important;
+  line-height:1.45!important;
+  margin-top:9px!important;
+}
+#menuPage .card .ing,.daily-card .ing{
+  color:#a79e94!important;
+  line-height:1.45!important;
+  padding-top:9px!important;
+  margin-top:10px!important;
+  border-top:1px solid rgba(255,255,255,.07)!important;
+}
+
+/* Collapsed cards: photo + title only. */
+#menuPage .card:not(.expanded) .desc,
+#menuPage .card:not(.expanded) .ing,
+#menuPage .card:not(.expanded) .nutrition,
+#menuPage .card:not(.expanded) .add-to-cart,
+.daily-card:not(.expanded) .desc,
+.daily-card:not(.expanded) .ing,
+.daily-card:not(.expanded) .nutrition,
+.daily-card:not(.expanded) .add-to-cart{
+  display:none!important;
+}
+#menuPage .card.expanded .desc,.daily-card.expanded .desc{display:block!important}
+#menuPage .card.expanded .ing,.daily-card.expanded .ing{display:block!important}
+#menuPage .card.expanded .nutrition,.daily-card.expanded .nutrition{display:flex!important}
+#menuPage .card.expanded .add-to-cart,.daily-card.expanded .add-to-cart{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  text-align:center!important;
+  gap:0!important;
+}
+.nutrition span{
+  background:rgba(211,173,116,.08)!important;
+  border-color:rgba(211,173,116,.15)!important;
+  color:#e5d5bf!important;
+}
+.new-badge{
+  background:rgba(190,139,73,.92)!important;
+  box-shadow:0 4px 12px rgba(0,0,0,.25)!important;
+}
+
+/* Daily page remains stable when opened. */
+.daily-card.expanded{transform:none!important}
+.daily-card.expanded .photo{height:240px!important}
+
+/* Desktop mosaic: one daily-rotating featured dish + four compact dishes. */
+@media(min-width:901px){
+  #menuPage .grid{
+    grid-template-columns:minmax(0,1.18fr) repeat(2,minmax(0,1fr))!important;
+    grid-auto-rows:278px!important;
+    grid-auto-flow:row!important;
+  }
+
+  #menuPage .card{
+    position:relative!important;
+    align-self:stretch!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+  }
+
+  /* Ordinary compact cards never change the grid height. */
+  #menuPage .card:not(.featured-card):not(.wide-card){
+    height:278px!important;
+  }
+  #menuPage .card:not(.featured-card):not(.wide-card) .photo{
+    height:210px!important;
+  }
+  #menuPage .card:not(.featured-card):not(.wide-card):not(.expanded) .body{
+    height:68px!important;
+    min-height:68px!important;
+    padding:12px 16px!important;
+    display:flex!important;
+    align-items:center!important;
+  }
+
+  /* Details of compact cards open inside the card over the image. */
+  #menuPage .card:not(.featured-card):not(.wide-card).expanded .photo{
+    height:100%!important;
+    filter:brightness(.38)!important;
+  }
+  #menuPage .card:not(.featured-card):not(.wide-card).expanded .body{
+    position:absolute!important;
+    left:0!important;
+    right:0!important;
+    bottom:0!important;
+    z-index:2!important;
+    max-height:100%!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain!important;
+    padding:15px 16px 16px!important;
+    background:linear-gradient(180deg,rgba(14,14,14,.58),rgba(14,14,14,.95) 34%,rgba(14,14,14,.99))!important;
+    scrollbar-width:thin!important;
+  }
+
+  /* Featured card equals exactly two compact rows + the gap. */
+  #menuPage .card.featured-card{
+    grid-column:1!important;
+    grid-row:1 / span 2!important;
+    height:auto!important;
+  }
+  #menuPage .card.featured-card:not(.expanded) .photo{
+    height:500px!important;
+  }
+  #menuPage .card.featured-card:not(.expanded) .body{
+    height:56px!important;
+    min-height:56px!important;
+    padding:14px 19px!important;
+    display:flex!important;
+    align-items:center!important;
+  }
+  #menuPage .card.featured-card .name{font-size:21px!important}
+  #menuPage .card.featured-card.expanded .photo{
+    height:100%!important;
+    filter:brightness(.42)!important;
+  }
+  #menuPage .card.featured-card.expanded .body{
+    position:absolute!important;
+    left:0!important;
+    right:0!important;
+    bottom:0!important;
+    z-index:2!important;
+    max-height:78%!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain!important;
+    padding:18px 19px 20px!important;
+    background:linear-gradient(180deg,rgba(14,14,14,.50),rgba(14,14,14,.95) 28%,rgba(14,14,14,.99))!important;
+    scrollbar-width:thin!important;
+  }
+
+  /* Sixth visual dish becomes a deliberate full-width row. */
+  #menuPage .card.wide-card{
+    grid-column:1 / -1!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr)!important;
+    height:278px!important;
+  }
+  #menuPage .card.wide-card .photo{
+    width:100%!important;
+    height:278px!important;
+  }
+  #menuPage .card.wide-card .body{
+    height:278px!important;
+    min-height:0!important;
+    padding:18px 22px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    justify-content:center!important;
+    overflow-y:auto!important;
+    background:var(--v3-card)!important;
+  }
+  #menuPage .card.wide-card.expanded .body{
+    justify-content:flex-start!important;
+  }
+}
+
+@media(max-width:900px){
+  #menuPage .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #menuPage .card.featured-card,#menuPage .card.wide-card{
+    grid-column:auto!important;
+    grid-row:auto!important;
+    display:block!important;
+    height:auto!important;
+  }
+  #menuPage .card .photo{height:215px!important}
+  #menuPage .card:not(.expanded) .body{padding:12px 16px 13px!important}
+}
+
+@media(max-width:650px){
+  header{padding:12px 12px 10px!important}
+  header h1{font-size:32px!important}
+  nav{
+    width:100%!important;
+    justify-content:flex-start!important;
+    overflow-x:auto!important;
+    flex-wrap:nowrap!important;
+    padding:7px 10px!important;
+    scrollbar-width:none!important;
+  }
+  nav::-webkit-scrollbar{display:none}
+  nav button{flex:0 0 auto!important;font-size:13px!important;padding:8px 11px!important}
+  nav button[title="Добавить"]{margin-left:8px!important}
+  main{padding:16px 11px 38px!important}
+  #menuPage .grid{grid-template-columns:1fr!important;gap:14px!important}
+  #menuPage section{margin:24px 0 32px!important}
+  #menuPage section h2{font-size:23px!important}
+}
