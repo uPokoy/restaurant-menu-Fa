@@ -4,6 +4,8 @@
   if(window.__FA_REDESIGN_V3__) return;
   window.__FA_REDESIGN_V3__=true;
 
+  var cartSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 9.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20 7H6"/><circle cx="10" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg>';
+
   function localDayNumber(){
     var now=new Date();
     return Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000);
@@ -18,12 +20,64 @@
 
   function cleanCartButtons(root){
     var scope=root||document;
-    scope.querySelectorAll('.add-to-cart').forEach(function(btn){
+    scope.querySelectorAll('.add-to-cart:not(.compact-cart-button)').forEach(function(btn){
       var text=String(btn.textContent||'').trim();
       if(text.indexOf('Добавить в корзину')!==-1 && text!=='Добавить в корзину'){
         btn.textContent='Добавить в корзину';
       }
     });
+  }
+
+  function protectDishImages(root){
+    var scope=root||document;
+    scope.querySelectorAll('#menuPage .card img.photo,.daily-card img.photo').forEach(function(img){
+      img.draggable=false;
+      img.setAttribute('draggable','false');
+      img.style.setProperty('-webkit-user-drag','none');
+      img.style.setProperty('user-select','none');
+      img.style.setProperty('-webkit-user-select','none');
+      if(img.dataset.faDragProtected==='1') return;
+      img.dataset.faDragProtected='1';
+      img.addEventListener('dragstart',function(event){event.preventDefault();});
+    });
+  }
+
+  function prepareCompactCard(card){
+    if(!card) return;
+    var body=card.querySelector('.body');
+    if(!body) return;
+    var name=body.querySelector('.name');
+    var nutrition=body.querySelector('.nutrition');
+    var button=body.querySelector('.add-to-cart');
+    if(!name||!nutrition||!button) return;
+
+    if(name.nextElementSibling!==nutrition){
+      name.insertAdjacentElement('afterend',nutrition);
+    }
+    if(button.parentElement!==nutrition){
+      nutrition.appendChild(button);
+    }
+
+    button.classList.remove('btn','primary');
+    button.classList.add('compact-cart-button');
+    button.setAttribute('aria-label','Добавить в корзину');
+    button.setAttribute('title','Добавить в корзину');
+    button.innerHTML=cartSvg;
+  }
+
+  function restoreNormalCard(card){
+    if(!card) return;
+    var body=card.querySelector('.body');
+    if(!body) return;
+    var button=body.querySelector('.add-to-cart');
+    var nutrition=body.querySelector('.nutrition');
+    if(!button||!button.classList.contains('compact-cart-button')) return;
+
+    button.classList.remove('compact-cart-button');
+    button.classList.add('btn','primary');
+    button.textContent='Добавить в корзину';
+    if(nutrition) body.appendChild(nutrition);
+    body.appendChild(button);
   }
 
   function styleCategories(){
@@ -86,13 +140,24 @@
 
     var visualCards=Array.prototype.slice.call(grid.querySelectorAll(':scope > .card'));
     if(visualCards.length>=6) visualCards[5].classList.add('wide-card');
+
+    visualCards.forEach(function(card){
+      if(!card.classList.contains('featured-card')&&!card.classList.contains('wide-card')){
+        prepareCompactCard(card);
+      }else{
+        restoreNormalCard(card);
+      }
+    });
+
     cleanCartButtons(grid);
+    protectDishImages(grid);
   }
 
   function decorateMenu(){
     document.querySelectorAll('#menuPage section').forEach(decorateSection);
     styleCategories();
     cleanCartButtons(document);
+    protectDishImages(document);
   }
 
   function centerCard(card){
@@ -154,9 +219,7 @@
     wrapDrawMenu();
     decorateMenu();
     bindCentering();
-    window.addEventListener('pageshow',function(){
-      decorateMenu();
-    });
+    window.addEventListener('pageshow',function(){decorateMenu();});
     console.info('[FA] Redesign V3 ready');
   }catch(e){
     console.error('[FA] Redesign V3 failed',e);
