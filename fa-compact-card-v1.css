@@ -90,10 +90,11 @@
   pointer-events:none!important;
 }
 
-/* Featured tall card: always show KBJU directly under the title when expanded. */
+/* Featured tall card: the complete information block stays at the bottom. */
 #menuPage .card.featured-card.expanded .body{
   display:flex!important;
   flex-direction:column!important;
+  justify-content:flex-end!important;
 }
 #menuPage .card.featured-card.expanded .name{
   order:1!important;
