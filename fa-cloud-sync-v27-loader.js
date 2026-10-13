@@ -31,16 +31,37 @@
       stable.href='fa-scroll-stability-v1.css?build=1.1';
       document.head.appendChild(stable);
     }
+    if(!document.getElementById('fa-home-sections-v1-css')){
+      var home=document.createElement('link');
+      home.id='fa-home-sections-v1-css';
+      home.rel='stylesheet';
+      home.href='fa-home-sections-v1.css?build=1.0';
+      document.head.appendChild(home);
+    }
+  }
+
+  function loadHomeSections(){
+    if(document.getElementById('fa-home-sections-v1-js')) return;
+    var h=document.createElement('script');
+    h.id='fa-home-sections-v1-js';
+    h.src='fa-home-sections-v1.js?build=1.0';
+    h.async=false;
+    h.onload=function(){console.info('[FA] Home sections loaded')};
+    h.onerror=function(){console.warn('[FA] Home sections failed to load')};
+    document.head.appendChild(h);
   }
 
   function loadScrollStability(){
-    if(document.getElementById('fa-scroll-stability-v1-js')) return;
+    if(document.getElementById('fa-scroll-stability-v1-js')){
+      loadHomeSections();
+      return;
+    }
     var s=document.createElement('script');
     s.id='fa-scroll-stability-v1-js';
     s.src='fa-scroll-stability-v1.js?build=1.1';
     s.async=false;
-    s.onload=function(){console.info('[FA] Scroll stability loaded')};
-    s.onerror=function(){console.warn('[FA] Scroll stability failed to load')};
+    s.onload=function(){console.info('[FA] Scroll stability loaded');loadHomeSections()};
+    s.onerror=function(){console.warn('[FA] Scroll stability failed to load');loadHomeSections()};
     document.head.appendChild(s);
   }
 
