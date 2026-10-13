@@ -6,6 +6,8 @@
 
   var cartSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 9.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20 7H6"/><circle cx="10" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg>';
   var activeExpandedKey=null;
+  var pendingWheelDelta=0;
+  var wheelFrame=0;
 
   function localDayNumber(){
     var now=new Date();
@@ -248,6 +250,15 @@
     },30);
   }
 
+  function flushWheelScroll(){
+    wheelFrame=0;
+    if(!pendingWheelDelta) return;
+    var delta=pendingWheelDelta;
+    pendingWheelDelta=0;
+    var scroller=document.scrollingElement||document.documentElement;
+    scroller.scrollTop+=delta;
+  }
+
   function bindInteractions(){
     document.addEventListener('click',function(event){
       if(event.target.closest('button,input,select,textarea,a')) return;
@@ -285,8 +296,11 @@
       var factor=1;
       if(event.deltaMode===1) factor=16;
       else if(event.deltaMode===2) factor=window.innerHeight;
+      var delta=event.deltaY*factor;
+      if(!delta) return;
       event.preventDefault();
-      window.scrollBy({top:event.deltaY*factor,left:0,behavior:'auto'});
+      pendingWheelDelta+=delta;
+      if(!wheelFrame) wheelFrame=requestAnimationFrame(flushWheelScroll);
     },{passive:false});
   }
 
