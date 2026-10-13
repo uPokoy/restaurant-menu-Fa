@@ -12,9 +12,9 @@
   }
 
   var o=document.createElement('script');
-  o.src='fa-image-optimize.js?build=1.0';
+  o.src='fa-image-optimize.js?build=2.0';
   o.async=false;
-  o.onload=function(){console.info('[FA] Dish image optimizer loaded');loadCloud()};
-  o.onerror=function(){console.warn('[FA] Dish image optimizer failed to load');loadCloud()};
+  o.onload=function(){console.info('[FA] Image optimizer loaded');loadCloud()};
+  o.onerror=function(){console.warn('[FA] Image optimizer failed to load');loadCloud()};
   document.head.appendChild(o);
 })();
