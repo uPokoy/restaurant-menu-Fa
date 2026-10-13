@@ -23,7 +23,7 @@
 <link rel="stylesheet" href="fa-novelty-card-fix-v1.css?build=1.0">
 <link rel="stylesheet" href="fa-cart-badge-fix-v1.css?build=1.0">
 <link rel="stylesheet" href="fa-admin-polish-v1.css?build=1.1">
-<link rel="stylesheet" href="fa-admin-controls-v1.css?build=1.0">
+<link rel="stylesheet" href="fa-admin-controls-v1.css?build=1.1">
 </head>
 <body class="theme-dark">
 <header><h1 id="title">МЕНЮ</h1><p>Свежие блюда каждый день</p></header>
@@ -35,14 +35,13 @@
   <div id="cartPage" class="hidden"></div>
 
   <div id="addPage" class="panel hidden">
-    <h2>Добавление блюд</h2>
     <div class="add-layout">
       <div class="add-card">
         <h3 id="formTitle">Новое блюдо</h3>
         <label>Категория</label>
         <select id="fCat"></select>
         <label>Название блюда</label>
-        <input id="fName" placeholder="Например, Солянка">
+        <input id="fName" name="restaurant-dish-title" autocomplete="off" autocorrect="off" spellcheck="false" aria-autocomplete="none" data-form-type="other" data-yandex-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" placeholder="Например, Солянка">
         <label>Описание</label>
         <textarea id="fDesc" placeholder="Краткое описание блюда"></textarea>
         <label>Ингредиенты</label>
@@ -58,7 +57,7 @@
         <input id="fPhoto" type="file" accept="image/*">
         <div class="actions">
           <button class="btn primary" onclick="saveDish()">Добавить</button>
-          <button class="btn" onclick="cancelEdit()">Очистить</button>
+          <button class="btn" onclick="cancelEdit()">Отменить</button>
         </div>
       </div>
 
@@ -341,7 +340,7 @@ window.addEventListener("pageshow",()=>{applyTheme();applyBackground();syncNavAc
 <script src="fa-photo-scale-v1.js?build=1.0"></script>
 <script src="fa-cloud-sync-v27.js?build=28.3"></script>
 <script src="fa-admin-session-v1.js?build=1.1"></script>
-<script src="fa-admin-controls-v1.js?build=1.0"></script>
+<script src="fa-admin-controls-v1.js?build=1.1"></script>
 <script src="fa-redesign-v3.js?build=1.8"></script>
 <script src="fa-wide-card-v1.js?build=1.0"></script>
 <script src="fa-scroll-stability-v1.js?build=1.1"></script>
