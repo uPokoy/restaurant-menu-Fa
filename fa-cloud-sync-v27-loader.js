@@ -135,11 +135,25 @@
     document.head.appendChild(r);
   }
 
+  function loadAdminSession(){
+    if(document.getElementById('fa-admin-session-v1-js')){
+      loadRedesign();
+      return;
+    }
+    var a=document.createElement('script');
+    a.id='fa-admin-session-v1-js';
+    a.src='fa-admin-session-v1.js?build=1.0';
+    a.async=false;
+    a.onload=function(){console.info('[FA] Admin session guard loaded');loadRedesign()};
+    a.onerror=function(){console.warn('[FA] Admin session guard failed to load');loadRedesign()};
+    document.head.appendChild(a);
+  }
+
   function loadCloud(){
     var s=document.createElement('script');
     s.src='fa-cloud-sync-v27.js?build=28.3';
     s.async=false;
-    s.onload=function(){console.info('[FA] Cloud sync V27 loaded');loadRedesign()};
+    s.onload=function(){console.info('[FA] Cloud sync V27 loaded');loadAdminSession()};
     s.onerror=function(){console.error('[FA] Cloud sync V27 failed to load');loadRedesign()};
     document.head.appendChild(s);
   }
