@@ -3,19 +3,27 @@
   'use strict';
 
   function loadRedesignCss(){
-    if(document.getElementById('fa-redesign-v3-css')) return;
-    var link=document.createElement('link');
-    link.id='fa-redesign-v3-css';
-    link.rel='stylesheet';
-    link.href='fa-redesign-v3.css?build=1.1';
-    document.head.appendChild(link);
+    if(!document.getElementById('fa-redesign-v3-css')){
+      var link=document.createElement('link');
+      link.id='fa-redesign-v3-css';
+      link.rel='stylesheet';
+      link.href='fa-redesign-v3.css?build=1.1';
+      document.head.appendChild(link);
+    }
+    if(!document.getElementById('fa-compact-card-v1-css')){
+      var compact=document.createElement('link');
+      compact.id='fa-compact-card-v1-css';
+      compact.rel='stylesheet';
+      compact.href='fa-compact-card-v1.css?build=1.0';
+      document.head.appendChild(compact);
+    }
   }
 
   function loadRedesign(){
     if(document.getElementById('fa-redesign-v3-js')) return;
     var r=document.createElement('script');
     r.id='fa-redesign-v3-js';
-    r.src='fa-redesign-v3.js?build=1.1';
+    r.src='fa-redesign-v3.js?build=1.2';
     r.async=false;
     r.onload=function(){console.info('[FA] Redesign V3 loaded')};
     r.onerror=function(){console.warn('[FA] Redesign V3 failed to load')};
