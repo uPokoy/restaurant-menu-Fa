@@ -1,0 +1,25 @@
+/* FA_CART_BADGE_FIX_V1 — compact integrated cart counter */
+nav button.fa-nav-cart .cart-count{
+  position:absolute!important;
+  top:3px!important;
+  right:3px!important;
+  display:grid!important;
+  place-items:center!important;
+  min-width:15px!important;
+  height:15px!important;
+  padding:0 3px!important;
+  margin:0!important;
+  border:1px solid rgba(226,190,139,.42)!important;
+  border-radius:999px!important;
+  background:rgba(15,14,13,.88)!important;
+  color:#e7c89d!important;
+  font-size:9px!important;
+  line-height:1!important;
+  font-weight:800!important;
+  letter-spacing:0!important;
+  text-shadow:none!important;
+  box-shadow:0 1px 4px rgba(0,0,0,.28)!important;
+  -webkit-backdrop-filter:blur(4px)!important;
+  backdrop-filter:blur(4px)!important;
+  pointer-events:none!important;
+}
