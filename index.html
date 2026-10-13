@@ -127,65 +127,41 @@ body.theme-dark::after{background:rgba(0,0,0,.10)}body.theme-dark nav button{bac
 <script>
 const DEFAULT_CATS=["Супы","Вторые блюда","Салаты","Выпечка","Десерты"];
 const DEFAULT_DISHES=[
-{id:1,cat:"Супы",name:"Борщ",desc:"Традиционный борщ со сметаной.",ing:"Свёкла, капуста, картофель, морковь, лук",photo:"https://i.7fon.org/thumb/x171946.jpg",nutrition:{kcal:82,protein:5,fat:4,carbs:10}},
-{id:2,cat:"Супы",name:"Щи классические",desc:"Домашние щи из свежей капусты.",ing:"Капуста, картофель, морковь, лук, зелень",photo:"https://upload.wikimedia.org/wikipedia/commons/c/c5/Shchi.jpg",nutrition:{kcal:55,protein:3,fat:2,carbs:7}},
-{id:3,cat:"Вторые блюда",name:"Спагетти",desc:"Спагетти с томатным соусом и сыром.",ing:"Паста, томаты, сыр, чеснок, зелень",photo:"https://www.yanina.it/img/content/recipes/109/pasta_with_tomato_sauce.jpeg",nutrition:{kcal:165,protein:5,fat:5,carbs:25}},
-{id:4,cat:"Вторые блюда",name:"Лазанья",desc:"Сытная лазанья с мясным соусом.",ing:"Паста, фарш, томаты, сыр, соус бешамель",photo:"https://prostokvashino.ru/upload/resize_cache/iblock/aac/800_800_0/aac807d6311e11a313e8c0409676e8be.jpg",nutrition:{kcal:180,protein:10,fat:9,carbs:15}},
-{id:5,cat:"Вторые блюда",name:"Рулеты из куриной грудки в беконе",desc:"Нежные рулеты из куриной грудки, запечённые в ароматном беконе.",ing:"Куриная грудка, бекон, сыр, специи",photo:"https://nyamkin.ru/images/recepts/medium/65/24264bc969d.jpg",nutrition:{kcal:210,protein:23,fat:12,carbs:2}},
-{id:6,cat:"Вторые блюда",name:"Курица маринованная",desc:"Сочная курица в ароматном маринаде, запечённая до румяной корочки.",ing:"Курица, маринад, чеснок, лук, специи",photo:"https://img.povar.ru/mobile/ad/ed/2e/45/kurica_v_chesnochno-lukovom_marinade_zapechyonnaya_v_duhovke-791284.JPG",nutrition:{kcal:185,protein:24,fat:9,carbs:3}},
-{id:7,cat:"Вторые блюда",name:"Куриные сердечки в сливочном соусе",desc:"Нежные куриные сердечки в густом сливочном соусе.",ing:"Куриные сердечки, сливочный соус, лук, зелень",photo:"https://znatnakurka.ua/sites/default/files/styles/wide/public/2024-02/d50d803546e07eb4abe601b190bf3ee1-1.jpeg",nutrition:{kcal:175,protein:15,fat:11,carbs:4}},
-{id:8,cat:"Выпечка",name:"Пицца",desc:"Домашняя пицца с сыром, томатами и ароматными травами.",ing:"Тесто, томатный соус, сыр, томаты, маслины, зелень",photo:"https://upload.wikimedia.org/wikipedia/commons/b/b6/Pizza_image.jpg",nutrition:{kcal:245,protein:10,fat:10,carbs:27}},
-{id:9,cat:"Десерты",name:"Творожная запеканка",desc:"Нежная творожная запеканка с румяной корочкой.",ing:"Творог, яйца, манка, сахар, ваниль",photo:"https://images.news.ru/b8272e90-ffd4-11ef-8d4d-ac1f6bad3ff4_780.jpg",nutrition:{kcal:170,protein:14,fat:7,carbs:13}},
-{id:10,cat:"Десерты",name:"Сырники",desc:"Золотистые сырники из творога с лёгкой сахарной пудрой.",ing:"Творог, яйцо, мука, соль",photo:"https://prostokvashino.ru/upload/resize_cache/iblock/79a/800_800_0/79aa562607b9a93aab73f9f503bd0422.jpg",nutrition:{kcal:220,protein:16,fat:10,carbs:17}},
-{id:11,cat:"Десерты",name:"Манник",desc:"Пышный домашний манник с нежной серединой.",ing:"Манка, кефир или сметана, яйца, сахар, масло",photo:"https://images.news.ru/2026/04/23/k7lbipeniGdLZX2b2vB1iCdrzG4K52XBaABFFGoW_930.webp",nutrition:{kcal:210,protein:5,fat:7,carbs:32}},
-{id:12,cat:"Десерты",name:"Кексы со сгущёнкой",desc:"Пышные творожные кексы с начинкой из сгущёнки.",ing:"Творог, яйца, мука, масло, сгущёнка",photo:"https://img.iamcook.ru/2025/upl/recipes/cat/u-c3d0aead725849e565006dd50065ecb2.JPG",nutrition:{kcal:290,protein:7,fat:12,carbs:38}},
-{id:13,cat:"Десерты",name:"Сладкие ёжики — пирожные",desc:"Забавные сладкие пирожные в форме ёжиков.",ing:"Тесто, шоколад, орехи, сахар",photo:"https://images.gastronom.ru/001Sr0gBv0nBKhkBDVhbnLJvu6VwwrxKZfgt_tpBhio/pr%3Arecipe-cover-image/g%3Ace/rs%3Aauto%3A0%3A0%3A0/L2Ntcy9hbGwtaW1hZ2VzLzUwNDM3ZDdjLTliZDgtNDVjYy04NTM3LTVhYjBmODg4MDViNy5qcGc.webp",nutrition:{kcal:330,protein:6,fat:18,carbs:38}},
-{id:14,cat:"Вторые блюда",name:"Запеканка с брокколи и куриной грудкой",desc:"Нежная куриная запеканка с брокколи под румяной сырной корочкой.",ing:"Куриная грудка, брокколи, сыр, сливки, специи",photo:"https://www.sloosh.ru/upload/003/u383/5/c/kurinaja-zapekanka-s-brokkoli-images-big.jpg",nutrition:{kcal:145,protein:16,fat:7,carbs:6}}
+{id:1,cat:"Супы",name:"Борщ",desc:"Традиционный борщ со сметаной.",ing:"Свёкла, капуста, картофель, морковь, лук",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/1.jpg",nutrition:{kcal:82,protein:5,fat:4,carbs:10}},
+{id:2,cat:"Супы",name:"Щи классические",desc:"Домашние щи из свежей капусты.",ing:"Капуста, картофель, морковь, лук, зелень",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/2.jpg",nutrition:{kcal:55,protein:3,fat:2,carbs:7}},
+{id:3,cat:"Вторые блюда",name:"Спагетти",desc:"Спагетти с томатным соусом и сыром.",ing:"Паста, томаты, сыр, чеснок, зелень",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/3.jpg",nutrition:{kcal:165,protein:5,fat:5,carbs:25}},
+{id:4,cat:"Вторые блюда",name:"Лазанья",desc:"Сытная лазанья с мясным соусом.",ing:"Паста, фарш, томаты, сыр, соус бешамель",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/4.jpg",nutrition:{kcal:180,protein:10,fat:9,carbs:15}},
+{id:5,cat:"Вторые блюда",name:"Рулеты из куриной грудки в беконе",desc:"Нежные рулеты из куриной грудки, запечённые в ароматном беконе.",ing:"Куриная грудка, бекон, сыр, специи",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/5.jpg",nutrition:{kcal:210,protein:23,fat:12,carbs:2}},
+{id:6,cat:"Вторые блюда",name:"Курица маринованная",desc:"Сочная курица в ароматном маринаде, запечённая до румяной корочки.",ing:"Курица, маринад, чеснок, лук, специи",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/6.jpg",nutrition:{kcal:185,protein:24,fat:9,carbs:3}},
+{id:7,cat:"Вторые блюда",name:"Куриные сердечки в сливочном соусе",desc:"Нежные куриные сердечки в густом сливочном соусе.",ing:"Куриные сердечки, сливочный соус, лук, зелень",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/7.jpg",nutrition:{kcal:175,protein:15,fat:11,carbs:4}},
+{id:8,cat:"Выпечка",name:"Пицца",desc:"Домашняя пицца с сыром, томатами и ароматными травами.",ing:"Тесто, томатный соус, сыр, томаты, маслины, зелень",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/8.jpg",nutrition:{kcal:245,protein:10,fat:10,carbs:27}},
+{id:9,cat:"Десерты",name:"Творожная запеканка",desc:"Нежная творожная запеканка с румяной корочкой.",ing:"Творог, яйца, манка, сахар, ваниль",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/9.jpg",nutrition:{kcal:170,protein:14,fat:7,carbs:13}},
+{id:10,cat:"Десерты",name:"Сырники",desc:"Золотистые сырники из творога с лёгкой сахарной пудрой.",ing:"Творог, яйцо, мука, соль",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/10.jpg",nutrition:{kcal:220,protein:16,fat:10,carbs:17}},
+{id:11,cat:"Десерты",name:"Манник",desc:"Пышный домашний манник с нежной серединой.",ing:"Манка, кефир или сметана, яйца, сахар, масло",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/11.jpg",nutrition:{kcal:210,protein:5,fat:7,carbs:32}},
+{id:12,cat:"Десерты",name:"Кексы со сгущёнкой",desc:"Пышные творожные кексы с начинкой из сгущёнки.",ing:"Творог, яйца, мука, масло, сгущёнка",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/12.jpg",nutrition:{kcal:290,protein:7,fat:12,carbs:38}},
+{id:13,cat:"Десерты",name:"Сладкие ёжики — пирожные",desc:"Забавные сладкие пирожные в форме ёжиков.",ing:"Тесто, шоколад, орехи, сахар",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/13.jpg",nutrition:{kcal:330,protein:6,fat:18,carbs:38}},
+{id:14,cat:"Вторые блюда",name:"Запеканка с брокколи и куриной грудкой",desc:"Нежная куриная запеканка с брокколи под румяной сырной корочкой.",ing:"Куриная грудка, брокколи, сыр, сливки, специи",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/14.jpg",nutrition:{kcal:145,protein:16,fat:7,carbs:6}}
 ];
 
 let cats=JSON.parse(localStorage.getItem("restaurantCategories")||"null")||[...DEFAULT_CATS];
 let dishes=JSON.parse(localStorage.getItem("restaurantMenu")||"null")||JSON.parse(JSON.stringify(DEFAULT_DISHES));
 
-// Фотографии блюд.
-const ONLINE_PHOTOS={
-  "Борщ":"https://i.7fon.org/thumb/x171946.jpg",
-  "Щи классические":"https://upload.wikimedia.org/wikipedia/commons/c/c5/Shchi.jpg",
-  "Спагетти":"https://www.yanina.it/img/content/recipes/109/pasta_with_tomato_sauce.jpeg",
-  "Лазанья":"https://prostokvashino.ru/upload/resize_cache/iblock/aac/800_800_0/aac807d6311e11a313e8c0409676e8be.jpg",
-  "Рулеты из куриной грудки в беконе":"https://nyamkin.ru/images/recepts/medium/65/24264bc969d.jpg",
-  "Курица маринованная":"https://img.povar.ru/mobile/ad/ed/2e/45/kurica_v_chesnochno-lukovom_marinade_zapechyonnaya_v_duhovke-791284.JPG",
-  "Куриные сердечки в сливочном соусе":"https://znatnakurka.ua/sites/default/files/styles/wide/public/2024-02/d50d803546e07eb4abe601b190bf3ee1-1.jpeg",
-  "Пицца":"https://upload.wikimedia.org/wikipedia/commons/b/b6/Pizza_image.jpg",
-  "Творожная запеканка":"https://images.news.ru/b8272e90-ffd4-11ef-8d4d-ac1f6bad3ff4_780.jpg",
-  "Сырники":"https://prostokvashino.ru/upload/resize_cache/iblock/79a/800_800_0/79aa562607b9a93aab73f9f503bd0422.jpg",
-  "Манник":"https://images.news.ru/2026/04/23/k7lbipeniGdLZX2b2vB1iCdrzG4K52XBaABFFGoW_930.webp",
-  "Кексы со сгущёнкой":"https://img.iamcook.ru/2025/upl/recipes/cat/u-c3d0aead725849e565006dd50065ecb2.JPG",
-  "Кексы со сгущенкой":"https://img.iamcook.ru/2025/upl/recipes/cat/u-c3d0aead725849e565006dd50065ecb2.JPG",
-  "Сладкие ёжики — пирожные":"https://images.gastronom.ru/001Sr0gBv0nBKhkBDVhbnLJvu6VwwrxKZfgt_tpBhio/pr%3Arecipe-cover-image/g%3Ace/rs%3Aauto%3A0%3A0%3A0/L2Ntcy9hbGwtaW1hZ2VzLzUwNDM3ZDdjLTliZDgtNDVjYy04NTM3LTVhYjBmODg4MDViNy5qcGc.webp",
-  "Сладкие ежики пироженые":"https://images.gastronom.ru/001Sr0gBv0nBKhkBDVhbnLJvu6VwwrxKZfgt_tpBhio/pr%3Arecipe-cover-image/g%3Ace/rs%3Aauto%3A0%3A0%3A0/L2Ntcy9hbGwtaW1hZ2VzLzUwNDM3ZDdjLTliZDgtNDVjYy04NTM3LTVhYjBmODg4MDViNy5qcGc.webp",
-  "Запеканка с брокколи и куриной грудкой":"https://www.sloosh.ru/upload/003/u383/5/c/kurinaja-zapekanka-s-brokkoli-images-big.jpg"
-};
-
-// Подставляем найденные фотографии и для уже сохранённых блюд, и для новых установок.
-dishes=dishes.map(d=>ONLINE_PHOTOS[d.name] ? {...d,photo:(d.photo && d.photo!=="https://make-eat.ru/sushi-rollu-souse-news/2078.jpg")?d.photo:ONLINE_PHOTOS[d.name]} : d);
-localStorage.setItem("restaurantMenu",JSON.stringify(dishes));
-
 
 // Новые блюда, добавленные в меню по запросу. Добавляются один раз даже в уже существующее меню пользователя.
 const NEW_DISHES_V56=[
-{id:101,cat:"Супы",name:"Солянка сборная мясная",desc:"Наваристая сборная мясная солянка с копчёностями, оливками и лимоном.",ing:"Мясо, копчёности, солёные огурцы, оливки, лук, томат, лимон",photo:"https://images.gastronom.ru/P_8MPEtfThIl-lhZ9qzv65l4FwuWGikfnxygk-73L2U/pr%3Arecipe-cover-image/g%3Ace/rs%3Aauto%3A0%3A0%3A0/L2Ntcy9hbGwtaW1hZ2VzLzlkZmFiOTAzLTM4YzMtNGJlZi1hNTZkLTRhYTdhOWE2NDc3Ni5qcGc.webp",addedAt:Date.now(),nutrition:{kcal:110,protein:8,fat:7,carbs:4}},
-{id:102,cat:"Супы",name:"Суп с фрикадельками классический",desc:"Домашний суп с сочными мясными фрикадельками, картофелем и овощами.",ing:"Мясной фарш, картофель, морковь, лук, зелень, специи",photo:"https://img.delo-vcusa.ru/2024/04/sup-s-frikadelkami.jpg",addedAt:Date.now(),nutrition:{kcal:85,protein:6,fat:4,carbs:6}},
-{id:103,cat:"Супы",name:"Сырный крем суп с беконом",desc:"Нежный сливочный сырный крем-суп с хрустящим беконом.",ing:"Картофель, сливки, плавленый сыр, бекон, лук, сельдерей",photo:"https://images.gastronom.ru/WzQ8U6REJinZXsZgSZEcblMnngsVSexBrDVaBWNGrOw/pr%3Arecipe-cover-image/g%3Ace/rs%3Aauto%3A0%3A0%3A0/L2Ntcy9hbGwtaW1hZ2VzL2ViOWNkMDIxLTY1NjEtNGVhNy1iYzhkLWQ0MmZlNDM0NTkyZS5qcGc.webp",addedAt:Date.now(),nutrition:{kcal:155,protein:6,fat:11,carbs:7}},
-{id:104,cat:"Вторые блюда",name:"Паста карбонара с беконом и сливками",desc:"Паста с беконом в нежном сливочном соусе.",ing:"Спагетти, бекон, сливки, яйцо, сыр, чеснок",photo:"https://avatars.mds.yandex.net/get-vertis-journal/4212087/Pasta_karbonara_s_bekonom_i_slivkami.jpg_1761651963390/1600x1600",addedAt:Date.now(),nutrition:{kcal:250,protein:10,fat:13,carbs:24}},
-{id:105,cat:"Вторые блюда",name:"Жареная картошка с луком на сковороде",desc:"Румяная жареная картошка с золотистым луком.",ing:"Картофель, лук, растительное масло, соль, перец",photo:"https://vkusnoff.com/img/recepty/6014/big.webp",addedAt:Date.now(),nutrition:{kcal:180,protein:3,fat:8,carbs:25}},
-{id:106,cat:"Вторые блюда",name:"Макароны по флотски с фаршем и корейской морковью на сковороде",desc:"Сытные макароны с мясным фаршем и корейской морковью.",ing:"Макароны, мясной фарш, корейская морковь, лук, специи",photo:"https://www.yanina.it/img/content/recipes/109/pasta_with_tomato_sauce.jpeg",addedAt:Date.now(),nutrition:{kcal:215,protein:9,fat:9,carbs:23}},
-{id:107,cat:"Вторые блюда",name:"Форель в сливках",desc:"Нежная форель в бархатистом сливочном соусе.",ing:"Форель, сливки, сливочное масло, специи, лимон",photo:"https://media.ovkuse.ru/images/recipes/25377496-ea32-4474-9829-4673a53a8167/25377496-ea32-4474-9829-4673a53a8167_420_420.webp",addedAt:Date.now(),nutrition:{kcal:205,protein:19,fat:13,carbs:2}},
-{id:108,cat:"Вторые блюда",name:"Кабачковая запеканка с куриным филе",desc:"Нежная запеканка из кабачков и куриного филе под сырной корочкой.",ing:"Кабачки, куриное филе, яйца, сыр, лук, сметана",photo:"https://static.1000.menu/img/content-v2/a1/f7/17696/zapekanka-iz-kabachkov-s-kuricei-v-duxovke-s-syrom_1636004099_8_max.jpg",addedAt:Date.now(),nutrition:{kcal:125,protein:14,fat:6,carbs:5}},
-{id:109,cat:"Вторые блюда",name:"Гнезда с фаршем и сыром",desc:"Запечённые мясные гнёзда с сочной начинкой и сыром.",ing:"Мясной фарш, макароны-гнёзда, сыр, лук, специи",photo:"https://www.yanina.it/img/content/recipes/109/pasta_with_tomato_sauce.jpeg",addedAt:Date.now(),nutrition:{kcal:225,protein:12,fat:11,carbs:20}},
-{id:110,cat:"Салаты",name:"Салат с тунцом белковый",desc:"Лёгкий белковый салат с тунцом, яйцом, огурцом и зеленью.",ing:"Тунец, яйца, огурец, зелень, греческий йогурт",photo:"https://media.ovkuse.ru/images/recipes/27267c7d-bfa2-4dd2-a7d5-ee35ed0576ce/27267c7d-bfa2-4dd2-a7d5-ee35ed0576ce_420_420.webp",addedAt:Date.now(),nutrition:{kcal:115,protein:15,fat:4,carbs:4}},
-{id:111,cat:"Салаты",name:"Салат «Легкий вечер» с креветками",desc:"Свежий лёгкий салат с креветками и овощами.",ing:"Креветки, салатные листья, огурец, помидоры, перец, сыр",photo:"https://vkusnoff.com/img/recepty/5148/big.webp",addedAt:Date.now(),nutrition:{kcal:95,protein:12,fat:3,carbs:5}},
-{id:112,cat:"Салаты",name:"Салат «Белковый удар» с куриной грудкой",desc:"Сытный белковый салат с куриной грудкой и свежими овощами.",ing:"Куриная грудка, салатные листья, огурец, помидоры, зелень",photo:"https://images.news.ru/2026/02/06/t64WrlUC3b5GIBlBTXWFNXPUSzN6YtXHMfTLOJ5W_780.webp",addedAt:Date.now(),nutrition:{kcal:120,protein:18,fat:4,carbs:3}},
-{id:113,cat:"Выпечка",name:"Шарлотка",desc:"Классическая домашняя шарлотка с яблоками.",ing:"Яблоки, яйца, мука, сахар, корица",photo:"https://images.news.ru/2026/04/23/k7lbipeniGdLZX2b2vB1iCdrzG4K52XBaABFFGoW_930.webp",addedAt:Date.now(),nutrition:{kcal:210,protein:5,fat:6,carbs:35}}
+{id:101,cat:"Супы",name:"Солянка сборная мясная",desc:"Наваристая сборная мясная солянка с копчёностями, оливками и лимоном.",ing:"Мясо, копчёности, солёные огурцы, оливки, лук, томат, лимон",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/101.jpg",addedAt:Date.now(),nutrition:{kcal:110,protein:8,fat:7,carbs:4}},
+{id:102,cat:"Супы",name:"Суп с фрикадельками классический",desc:"Домашний суп с сочными мясными фрикадельками, картофелем и овощами.",ing:"Мясной фарш, картофель, морковь, лук, зелень, специи",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/102.jpg",addedAt:Date.now(),nutrition:{kcal:85,protein:6,fat:4,carbs:6}},
+{id:103,cat:"Супы",name:"Сырный крем суп с беконом",desc:"Нежный сливочный сырный крем-суп с хрустящим беконом.",ing:"Картофель, сливки, плавленый сыр, бекон, лук, сельдерей",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/103.jpg",addedAt:Date.now(),nutrition:{kcal:155,protein:6,fat:11,carbs:7}},
+{id:104,cat:"Вторые блюда",name:"Паста карбонара с беконом и сливками",desc:"Паста с беконом в нежном сливочном соусе.",ing:"Спагетти, бекон, сливки, яйцо, сыр, чеснок",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/104.jpg",addedAt:Date.now(),nutrition:{kcal:250,protein:10,fat:13,carbs:24}},
+{id:105,cat:"Вторые блюда",name:"Жареная картошка с луком на сковороде",desc:"Румяная жареная картошка с золотистым луком.",ing:"Картофель, лук, растительное масло, соль, перец",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/105.jpg",addedAt:Date.now(),nutrition:{kcal:180,protein:3,fat:8,carbs:25}},
+{id:106,cat:"Вторые блюда",name:"Макароны по флотски с фаршем и корейской морковью на сковороде",desc:"Сытные макароны с мясным фаршем и корейской морковью.",ing:"Макароны, мясной фарш, корейская морковь, лук, специи",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/106.jpg",addedAt:Date.now(),nutrition:{kcal:215,protein:9,fat:9,carbs:23}},
+{id:107,cat:"Вторые блюда",name:"Форель в сливках",desc:"Нежная форель в бархатистом сливочном соусе.",ing:"Форель, сливки, сливочное масло, специи, лимон",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/107.jpg",addedAt:Date.now(),nutrition:{kcal:205,protein:19,fat:13,carbs:2}},
+{id:108,cat:"Вторые блюда",name:"Кабачковая запеканка с куриным филе",desc:"Нежная запеканка из кабачков и куриного филе под сырной корочкой.",ing:"Кабачки, куриное филе, яйца, сыр, лук, сметана",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/108.jpg",addedAt:Date.now(),nutrition:{kcal:125,protein:14,fat:6,carbs:5}},
+{id:109,cat:"Вторые блюда",name:"Гнезда с фаршем и сыром",desc:"Запечённые мясные гнёзда с сочной начинкой и сыром.",ing:"Мясной фарш, макароны-гнёзда, сыр, лук, специи",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/109.jpg",addedAt:Date.now(),nutrition:{kcal:225,protein:12,fat:11,carbs:20}},
+{id:110,cat:"Салаты",name:"Салат с тунцом белковый",desc:"Лёгкий белковый салат с тунцом, яйцом, огурцом и зеленью.",ing:"Тунец, яйца, огурец, зелень, греческий йогурт",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/110.jpg",addedAt:Date.now(),nutrition:{kcal:115,protein:15,fat:4,carbs:4}},
+{id:111,cat:"Салаты",name:"Салат «Легкий вечер» с креветками",desc:"Свежий лёгкий салат с креветками и овощами.",ing:"Креветки, салатные листья, огурец, помидоры, перец, сыр",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/111.jpg",addedAt:Date.now(),nutrition:{kcal:95,protein:12,fat:3,carbs:5}},
+{id:112,cat:"Салаты",name:"Салат «Белковый удар» с куриной грудкой",desc:"Сытный белковый салат с куриной грудкой и свежими овощами.",ing:"Куриная грудка, салатные листья, огурец, помидоры, зелень",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/112.jpg",addedAt:Date.now(),nutrition:{kcal:120,protein:18,fat:4,carbs:3}},
+{id:113,cat:"Выпечка",name:"Шарлотка",desc:"Классическая домашняя шарлотка с яблоками.",ing:"Яблоки, яйца, мука, сахар, корица",photo:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/optimized-v1/113.jpg",addedAt:Date.now(),nutrition:{kcal:210,protein:5,fat:6,carbs:35}}
 ];
 const NUTRITION_V59={'Борщ':{kcal:82,protein:5,fat:4,carbs:10},'Щи классические':{kcal:55,protein:3,fat:2,carbs:7},'Спагетти':{kcal:165,protein:5,fat:5,carbs:25},'Лазанья':{kcal:180,protein:10,fat:9,carbs:15},'Рулеты из куриной грудки в беконе':{kcal:210,protein:23,fat:12,carbs:2},'Курица маринованная':{kcal:185,protein:24,fat:9,carbs:3},'Куриные сердечки в сливочном соусе':{kcal:175,protein:15,fat:11,carbs:4},'Пицца':{kcal:245,protein:10,fat:10,carbs:27},'Творожная запеканка':{kcal:170,protein:14,fat:7,carbs:13},'Сырники':{kcal:220,protein:16,fat:10,carbs:17},'Манник':{kcal:210,protein:5,fat:7,carbs:32},'Кексы со сгущёнкой':{kcal:290,protein:7,fat:12,carbs:38},'Сладкие ёжики — пирожные':{kcal:330,protein:6,fat:18,carbs:38},'Запеканка с брокколи и куриной грудкой':{kcal:145,protein:16,fat:7,carbs:6},'Солянка сборная мясная':{kcal:110,protein:8,fat:7,carbs:4},'Суп с фрикадельками классический':{kcal:85,protein:6,fat:4,carbs:6},'Сырный крем суп с беконом':{kcal:155,protein:6,fat:11,carbs:7},'Паста карбонара с беконом и сливками':{kcal:250,protein:10,fat:13,carbs:24},'Жареная картошка с луком на сковороде':{kcal:180,protein:3,fat:8,carbs:25},'Макароны по флотски с фаршем и корейской морковью на сковороде':{kcal:215,protein:9,fat:9,carbs:23},'Форель в сливках':{kcal:205,protein:19,fat:13,carbs:2},'Кабачковая запеканка с куриным филе':{kcal:125,protein:14,fat:6,carbs:5},'Гнезда с фаршем и сыром':{kcal:225,protein:12,fat:11,carbs:20},'Салат с тунцом белковый':{kcal:115,protein:15,fat:4,carbs:4},'Салат «Легкий вечер» с креветками':{kcal:95,protein:12,fat:3,carbs:5},'Салат «Белковый удар» с куриной грудкой':{kcal:120,protein:18,fat:4,carbs:3},'Шарлотка':{kcal:210,protein:5,fat:6,carbs:35}};
 const NUTRITION_V59_KEY="restaurantNutritionV59";
@@ -309,17 +285,26 @@ function showAppearance(btn){
   drawAppearance(); window.scrollTo({top:0,behavior:"smooth"});
 }
 const STANDARD_BACKGROUNDS=[
- {name:"Мрамор и золото",url:"https://foshandecosupply.com/cdn/shop/collections/Render_Carbon_de_Bambu_High_Gloss.png?v=1773782174"},
- {name:"Тёплое кафе",url:"https://static.wixstatic.com/media/3962bf_cef96ad2b6d849c1b3b0686d4793bd43~mv2.png/v1/fill/w_980%2Ch_658%2Cal_c%2Cq_90%2Cusm_0.66_1.00_0.01%2Cenc_avif%2Cquality_auto/3962bf_cef96ad2b6d849c1b3b0686d4793bd43~mv2.png"},
- {name:"Дерево и зелень",url:"https://static-2.happynest.vn/storage/uploads/2024/11/15-quan-an-co-thiet-ke-dep-nhat-sai-gon-khong-chi-ngon-ma-con-co-goc-song-ao-cuc-chat_23.jpg"},
- {name:"Чёрный премиум",url:"https://myrise-inc.com/assets/img/restaurant-luxury.jpg"},
- {name:"Современный мрамор",url:"https://images.squarespace-cdn.com/content/v1/577e099a5016e18715ddc511/1551745874585-OONNX2FLLAMZJSBXCRJA/K18_XTONE_Nuba_White_Nature_Liem_Black_Silk_Polished_Cam1.jpg"},
- {name:"Светлое дерево",url:"https://karriere.zillerseasons.at/fileadmin/_processed_/3/6/csm_01_21_AP_Wilde_Kr%C3%A4uterk%C3%BCche_heller_3523424802.webp"},
- {name:"Классический уют",url:"https://s0.rbk.ru/v6_top_pics/media/img/8/60/347627839689608.jpeg"},
- {name:"Fine dining",url:"https://assets-global.website-files.com/6531b2468ab95a04671ea5e5/655d15cd1e7ce33625c78f2e_finedining.jpg"},
- {name:"Вечерний ресторан",url:"https://static.designmynight.com/uploads/2024/01/gaucho-birmingham-date-night-optimised.jpg"},
- {name:"Зелёный бархат",url:"https://www.frizzmag.de/downloads/20721/download/olbrick.jpg?cb=0b470b86fac6ebb4ad6a294c8bb3e679&w=1200"}
+ {name:"Мрамор и золото",url:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/backgrounds/01"},
+ {name:"Тёплое кафе",url:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/backgrounds/02"},
+ {name:"Дерево и зелень",url:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/backgrounds/03"},
+ {name:"Чёрный премиум",url:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/backgrounds/04"},
+ {name:"Современный мрамор",url:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/backgrounds/05"},
+ {name:"Светлое дерево",url:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/backgrounds/06"},
+ {name:"Классический уют",url:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/backgrounds/07"},
+ {name:"Fine dining",url:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/backgrounds/08"},
+ {name:"Вечерний ресторан",url:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/backgrounds/09"},
+ {name:"Зелёный бархат",url:"https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/backgrounds/10"}
 ];
+const LEGACY_BACKGROUND_HOSTS=[
+ "foshandecosupply.com","static.wixstatic.com","static-2.happynest.vn","myrise-inc.com","images.squarespace-cdn.com",
+ "karriere.zillerseasons.at","s0.rbk.ru","assets-global.website-files.com","static.designmynight.com","www.frizzmag.de"
+];
+{
+  const savedBackground=localStorage.getItem("restaurantMenuBackground")||"";
+  const legacyIndex=LEGACY_BACKGROUND_HOSTS.findIndex(host=>savedBackground.includes(host));
+  if(legacyIndex>=0) localStorage.setItem("restaurantMenuBackground",STANDARD_BACKGROUNDS[legacyIndex].url);
+}
 function drawAppearance(){
   const bg=localStorage.getItem("restaurantMenuBackground")||"";
   const theme=localStorage.getItem("restaurantMenuTheme")||"light";
