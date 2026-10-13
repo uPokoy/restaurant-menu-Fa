@@ -24,16 +24,37 @@
       wide.href='fa-wide-card-v1.css?build=1.0';
       document.head.appendChild(wide);
     }
+    if(!document.getElementById('fa-scroll-stability-v1-css')){
+      var stable=document.createElement('link');
+      stable.id='fa-scroll-stability-v1-css';
+      stable.rel='stylesheet';
+      stable.href='fa-scroll-stability-v1.css?build=1.0';
+      document.head.appendChild(stable);
+    }
+  }
+
+  function loadScrollStability(){
+    if(document.getElementById('fa-scroll-stability-v1-js')) return;
+    var s=document.createElement('script');
+    s.id='fa-scroll-stability-v1-js';
+    s.src='fa-scroll-stability-v1.js?build=1.0';
+    s.async=false;
+    s.onload=function(){console.info('[FA] Scroll stability loaded')};
+    s.onerror=function(){console.warn('[FA] Scroll stability failed to load')};
+    document.head.appendChild(s);
   }
 
   function loadWideCards(){
-    if(document.getElementById('fa-wide-card-v1-js')) return;
+    if(document.getElementById('fa-wide-card-v1-js')){
+      loadScrollStability();
+      return;
+    }
     var w=document.createElement('script');
     w.id='fa-wide-card-v1-js';
     w.src='fa-wide-card-v1.js?build=1.0';
     w.async=false;
-    w.onload=function(){console.info('[FA] Wide card refinements loaded')};
-    w.onerror=function(){console.warn('[FA] Wide card refinements failed to load')};
+    w.onload=function(){console.info('[FA] Wide card refinements loaded');loadScrollStability()};
+    w.onerror=function(){console.warn('[FA] Wide card refinements failed to load');loadScrollStability()};
     document.head.appendChild(w);
   }
 
