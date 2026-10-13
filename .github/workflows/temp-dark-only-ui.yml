@@ -1,0 +1,111 @@
+name: Temporary dark-only appearance cleanup
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make site dark-only and remove transparency settings
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          # Dark from the first paint, before JavaScript runs.
+          if '<body class="theme-dark">' not in s:
+              if '<body>' not in s:
+                  raise SystemExit('body tag not found')
+              s = s.replace('<body>', '<body class="theme-dark">', 1)
+
+          # Remove theme selector and transparency settings from the Appearance page.
+          s = s.replace('  const theme=localStorage.getItem("restaurantMenuTheme")||"light";\n', '', 1)
+          pattern = re.compile(
+              r'(  appearancePage\.innerHTML=`<div class="appearance-wrap"><div class="appearance-card"><h2>Вид</h2>\n)'
+              r'.*?'
+              r'(  <div class="appearance-section"><h3>Размытие</h3>\n)',
+              re.S,
+          )
+          s, n = pattern.subn(r'\1\2', s, count=1)
+          if n != 1:
+              raise SystemExit('appearance theme/transparency block not found')
+
+          # Keep the existing rendering calls, but use fixed dark-theme values.
+          fixed = '''function applyDishTransparency(){
+            document.documentElement.style.setProperty("--dish-alpha",".88");
+            document.documentElement.style.setProperty("--dish-rgb","27,26,25");
+            document.querySelectorAll(".card,.daily-card").forEach(el=>{el.style.setProperty("background","rgba(27,26,25,.88)","important");});
+          }
+          function applyCategoryTransparency(){
+            document.documentElement.style.setProperty('--cat-alpha','.70');
+            document.querySelectorAll('#menuPage section h2').forEach(el=>{
+              el.style.setProperty('background','rgba(0,0,0,.70)','important');
+              el.style.setProperty('color','#f6f1ea','important');
+              el.style.setProperty('text-shadow','0 1px 2px rgba(0,0,0,.95),0 0 5px rgba(0,0,0,.75)','important');
+              el.style.setProperty('opacity','1','important');
+            });
+          }
+          function applyNavTransparency(){
+            document.documentElement.style.setProperty("--nav-alpha",".60");
+            document.querySelectorAll("nav button").forEach(el=>{
+              const isActive=el.classList.contains('active');
+              el.style.setProperty("background",isActive?'rgba(240,231,220,.60)':'rgba(35,33,31,.60)',"important");
+              el.style.setProperty("color",isActive?'#17120f':'#f6f1ea',"important");
+              el.style.setProperty("text-shadow",isActive?'0 1px 2px rgba(255,255,255,.25),0 0 4px rgba(255,255,255,.18)':'0 1px 2px rgba(0,0,0,.95),0 0 5px rgba(0,0,0,.72)',"important");
+              el.style.setProperty("opacity","1","important");
+            });
+          }
+          '''
+          s, n = re.subn(
+              r'function setDishTransparency\(value\)\{.*?(?=function setBackgroundBlur\(value\)\{)',
+              fixed,
+              s,
+              count=1,
+              flags=re.S,
+          )
+          if n != 1:
+              raise SystemExit('transparency functions block not found')
+
+          # Remove light-theme switching entirely and force dark mode.
+          dark_only = '''function applyTheme(){
+            try{
+              localStorage.removeItem("restaurantMenuTheme");
+              localStorage.removeItem("restaurantDishTransparency");
+              localStorage.removeItem("restaurantCategoryTransparency");
+              localStorage.removeItem("restaurantNavTransparency");
+            }catch(e){}
+            document.body.classList.add("theme-dark");
+            document.body.classList.remove("theme-light");
+          }
+          '''
+          s, n = re.subn(
+              r'function setTheme\(theme\)\{.*?(?=function setStandardBackground\(index\)\{)',
+              dark_only,
+              s,
+              count=1,
+              flags=re.S,
+          )
+          if n != 1:
+              raise SystemExit('theme functions block not found')
+
+          # Verify user-visible controls are gone.
+          for forbidden in ['☀️ Светлая', '🌙 Тёмная', 'Настройки прозрачности', 'dishTransparency', 'catTransparency', 'navTransparency']:
+              if forbidden in s:
+                  raise SystemExit(f'old appearance control still present: {forbidden}')
+
+          p.write_text(s, encoding='utf-8')
+
+      - name: Commit cleanup and remove temporary workflow
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/temp-dark-only-ui.yml
+          git add index.html
+          git commit -m 'Use dark theme only and remove transparency settings'
+          git push
