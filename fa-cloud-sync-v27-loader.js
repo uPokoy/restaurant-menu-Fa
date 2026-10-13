@@ -137,7 +137,7 @@
 
   function loadCloud(){
     var s=document.createElement('script');
-    s.src='fa-cloud-sync-v27.js?build=28.2';
+    s.src='fa-cloud-sync-v27.js?build=28.3';
     s.async=false;
     s.onload=function(){console.info('[FA] Cloud sync V27 loaded');loadRedesign()};
     s.onerror=function(){console.error('[FA] Cloud sync V27 failed to load');loadRedesign()};
