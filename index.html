@@ -59,7 +59,7 @@ body.theme-dark::after{background:rgba(0,0,0,.10)}body.theme-dark nav button{bac
 .card,.daily-card{position:relative}
 </style>
 </head>
-<body>
+<body class="theme-dark">
 <header><h1 id="title">МЕНЮ</h1><p>Свежие блюда каждый день</p></header>
 
 <nav id="nav"></nav>
@@ -307,23 +307,7 @@ const LEGACY_BACKGROUND_HOSTS=[
 }
 function drawAppearance(){
   const bg=localStorage.getItem("restaurantMenuBackground")||"";
-  const theme=localStorage.getItem("restaurantMenuTheme")||"light";
   appearancePage.innerHTML=`<div class="appearance-wrap"><div class="appearance-card"><h2>Вид</h2>
-  <div class="appearance-section"><h3>Тема сайта</h3><div class="theme-actions">
-    <button class="theme-btn ${theme==='light'?'active':''}" onclick="setTheme('light')">☀️ Светлая</button>
-    <button class="theme-btn ${theme==='dark'?'active':''}" onclick="setTheme('dark')">🌙 Тёмная</button>
-  </div></div>
-  <details class="appearance-section transparency-folder">
-    <summary><span>Настройки прозрачности</span><span class="folder-arrow">▾</span></summary>
-    <div class="transparency-folder-body">
-      <div class="transparency-setting"><h3>Прозрачность карточек блюд</h3>
-      <div class="range-row"><input id="dishTransparency" type="range" min="0" max="100" step="1" value="${localStorage.getItem('restaurantDishTransparency')||12}" oninput="setDishTransparency(this.value)"><span id="dishTransparencyValue" class="range-value">${localStorage.getItem('restaurantDishTransparency')||12}%</span></div><div class="range-scale"><span>0% — непрозрачно</span><span>100% — прозрачно</span></div></div>
-      <div class="transparency-setting"><h3>Прозрачность заголовков категорий</h3>
-      <div class="range-row"><input id="catTransparency" type="range" min="0" max="100" step="1" value="${localStorage.getItem('restaurantCategoryTransparency')||30}" oninput="setCategoryTransparency(this.value)"><span id="catTransparencyValue" class="range-value">${localStorage.getItem('restaurantCategoryTransparency')||30}%</span></div><div class="range-scale"><span>0% — непрозрачно</span><span>100% — прозрачно</span></div></div>
-      <div class="transparency-setting"><h3>Прозрачность пунктов меню</h3>
-      <div class="range-row"><input id="navTransparency" type="range" min="0" max="100" step="1" value="${localStorage.getItem('restaurantNavTransparency')||40}" oninput="setNavTransparency(this.value)"><span id="navTransparencyValue" class="range-value">${localStorage.getItem('restaurantNavTransparency')||40}%</span></div><div class="range-scale"><span>0% — непрозрачно</span><span>100% — прозрачно</span></div></div>
-    </div>
-  </details>
   <div class="appearance-section"><h3>Размытие</h3>
   <div class="range-row"><input id="bgBlur" type="range" min="0" max="100" step="1" value="${localStorage.getItem('restaurantBackgroundBlur')||0}" oninput="setBackgroundBlur(this.value)"><span id="bgBlurValue" class="range-value">${localStorage.getItem('restaurantBackgroundBlur')||0}%</span></div><div class="range-scale"><span>0% — без размытия</span><span>100% — максимум</span></div></div>
   <div class="appearance-section"><h3>Фон</h3><div class="small">Выберите готовый фон для меню.</div>
@@ -333,69 +317,29 @@ function drawAppearance(){
   <div id="bgPreview" class="bg-preview" style="${bg?`background-image:url(${JSON.stringify(bg).slice(1,-1)})`:''}"><span>${bg?"Текущий фон":"Фон по умолчанию"}</span></div>
   </div></div></div>`;
 }
-function setDishTransparency(value){
-  const v=Math.max(0,Math.min(100,Number(value)||0));
-  localStorage.setItem("restaurantDishTransparency",String(v));
-  applyDishTransparency();
-  const out=document.getElementById("dishTransparencyValue"); if(out) out.textContent=`${v}%`;
-}
 function applyDishTransparency(){
-  const raw=localStorage.getItem("restaurantDishTransparency");
-  const v=raw===null?12:Math.max(0,Math.min(100,Number(raw)||0));
-  const alpha=(100-v)/100;
-  document.documentElement.style.setProperty("--dish-alpha",String(alpha));
-  const dark=document.body.classList.contains("theme-dark");
-  const bg=dark?`rgba(27,26,25,${alpha})`:`rgba(255,255,255,${alpha})`;
-  document.documentElement.style.setProperty("--dish-rgb",dark?"27,26,25":"255,255,255");
-  document.querySelectorAll(".card,.daily-card").forEach(el=>{el.style.setProperty("background",bg,"important");});
-  dailyPage?.querySelectorAll(".daily-card").forEach(el=>{el.style.setProperty("background",bg,"important");});
-}
-
-function setCategoryTransparency(value){
-  const v=Math.max(0,Math.min(100,Number(value)||0));
-  localStorage.setItem('restaurantCategoryTransparency',String(v));
-  applyCategoryTransparency();
-  const out=document.getElementById('catTransparencyValue'); if(out) out.textContent=`${v}%`;
+  document.documentElement.style.setProperty("--dish-alpha",".88");
+  document.documentElement.style.setProperty("--dish-rgb","27,26,25");
+  document.querySelectorAll(".card,.daily-card").forEach(el=>{el.style.setProperty("background","rgba(27,26,25,.88)","important");});
 }
 function applyCategoryTransparency(){
-  const raw=localStorage.getItem('restaurantCategoryTransparency');
-  const v=raw===null?30:Math.max(0,Math.min(100,Number(raw)||0));
-  const alpha=(100-v)/100;
-  const dark=document.body.classList.contains('theme-dark');
-  document.documentElement.style.setProperty('--cat-alpha',String(alpha));
+  document.documentElement.style.setProperty('--cat-alpha','.70');
   document.querySelectorAll('#menuPage section h2').forEach(el=>{
-    el.style.setProperty('background',dark?`rgba(0,0,0,${alpha})`:`rgba(255,255,255,${alpha})`,'important');
-    el.style.setProperty('color',dark?'#f6f1ea':'#171717','important');
-    el.style.setProperty('text-shadow',dark?'0 1px 2px rgba(0,0,0,.95),0 0 5px rgba(0,0,0,.75)':'0 1px 2px rgba(255,255,255,.9),0 0 5px rgba(255,255,255,.6)','important');
+    el.style.setProperty('background','rgba(0,0,0,.70)','important');
+    el.style.setProperty('color','#f6f1ea','important');
+    el.style.setProperty('text-shadow','0 1px 2px rgba(0,0,0,.95),0 0 5px rgba(0,0,0,.75)','important');
     el.style.setProperty('opacity','1','important');
   });
 }
-function setNavTransparency(value){
-  const v=Math.max(0,Math.min(100,Number(value)||0));
-  localStorage.setItem("restaurantNavTransparency",String(v));
-  applyNavTransparency();
-  const out=document.getElementById("navTransparencyValue"); if(out) out.textContent=`${v}%`;
-}
 function applyNavTransparency(){
-  const raw=localStorage.getItem("restaurantNavTransparency");
-  const v=raw===null?40:Math.max(0,Math.min(100,Number(raw)||0));
-  const alpha=(100-v)/100;
-  const dark=document.body.classList.contains("theme-dark");
-  const normal=dark?`rgba(35,33,31,${alpha})`:`rgba(255,255,255,${alpha})`;
-  const active=dark?`rgba(240,231,220,${alpha})`:`rgba(23,23,23,${alpha})`;
-  const normalText=dark?'#f6f1ea':'#171717';
-  const activeText=dark?'#17120f':'#ffffff';
-  const normalShadow=dark?'0 1px 2px rgba(0,0,0,.95),0 0 5px rgba(0,0,0,.72)':'0 1px 2px rgba(255,255,255,.85),0 0 5px rgba(255,255,255,.65)';
-  const activeShadow=dark?'0 1px 2px rgba(255,255,255,.25),0 0 4px rgba(255,255,255,.18)':'0 1px 2px rgba(0,0,0,.65),0 0 4px rgba(0,0,0,.45)';
+  document.documentElement.style.setProperty("--nav-alpha",".60");
   document.querySelectorAll("nav button").forEach(el=>{
     const isActive=el.classList.contains('active');
-    el.style.setProperty("background",isActive?active:normal,"important");
-    el.style.setProperty("color",isActive?activeText:normalText,"important");
-    el.style.setProperty("text-shadow",isActive?activeShadow:normalShadow,"important");
+    el.style.setProperty("background",isActive?'rgba(240,231,220,.60)':'rgba(35,33,31,.60)',"important");
+    el.style.setProperty("color",isActive?'#17120f':'#f6f1ea',"important");
+    el.style.setProperty("text-shadow",isActive?'0 1px 2px rgba(255,255,255,.25),0 0 4px rgba(255,255,255,.18)':'0 1px 2px rgba(0,0,0,.95),0 0 5px rgba(0,0,0,.72)',"important");
     el.style.setProperty("opacity","1","important");
   });
-  document.documentElement.style.setProperty("--nav-alpha",String(alpha));
-  document.documentElement.style.setProperty("--nav-active-alpha",String(alpha));
 }
 function setBackgroundBlur(value){
   const v=Math.max(0,Math.min(100,Number(value)||0));
@@ -409,13 +353,15 @@ function applyBackgroundBlur(){
   document.documentElement.style.setProperty("--site-bg-blur",`${v*.6}px`);
 }
 
-function setTheme(theme){
-  localStorage.setItem("restaurantMenuTheme",theme); applyTheme(); applyDishTransparency(); applyNavTransparency(); if(!dailyPage.classList.contains("hidden")) drawDaily(); drawAppearance(); applyDishTransparency();
-}
 function applyTheme(){
-  const theme=localStorage.getItem("restaurantMenuTheme")||"light";
-  document.body.classList.toggle("theme-dark",theme==="dark");
-  document.body.classList.toggle("theme-light",theme!=="dark");
+  try{
+    localStorage.removeItem("restaurantMenuTheme");
+    localStorage.removeItem("restaurantDishTransparency");
+    localStorage.removeItem("restaurantCategoryTransparency");
+    localStorage.removeItem("restaurantNavTransparency");
+  }catch(e){}
+  document.body.classList.add("theme-dark");
+  document.body.classList.remove("theme-light");
 }
 function setStandardBackground(index){
   const item=STANDARD_BACKGROUNDS[index]; if(!item)return;
