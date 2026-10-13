@@ -5,6 +5,7 @@
   window.__FA_HOME_SECTIONS_V1__=true;
 
   var cartSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 9.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20 7H6"/><circle cx="10" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg>';
+  var refreshSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6v5h-5"/><path d="M19.1 11a7.5 7.5 0 1 0-.9 5.1"/></svg>';
   var navObserver=null;
 
   function getMenuPage(){
@@ -134,11 +135,18 @@
   }
 
   function buildNewSection(fresh){
+    var count=fresh.length;
     var section=document.createElement('section');
-    section.className='home-special-section home-new-section';
-    section.innerHTML='<h2>Новинки</h2><div class="grid home-new-grid">'+fresh.map(function(d){return card(d);}).join('')+'</div>';
+    section.className='home-special-section home-new-section home-new-count-'+count;
+    section.innerHTML='<h2>Новинки</h2><div class="grid home-new-grid home-new-grid-count-'+count+'">'+fresh.map(function(d){return card(d);}).join('')+'</div>';
     var cards=section.querySelectorAll('.card');
-    Array.prototype.forEach.call(cards,function(el,index){compactifyCard(el,fresh[index]);});
+    Array.prototype.forEach.call(cards,function(el,index){
+      compactifyCard(el,fresh[index]);
+      if(count===1) el.classList.add('home-new-single');
+      else if(count===2) el.classList.add('home-new-pair');
+      else if(index===0) el.classList.add('home-new-featured');
+      else el.classList.add('home-new-small');
+    });
     return section;
   }
 
@@ -167,7 +175,7 @@
     var refresh=document.createElement('button');
     refresh.type='button';
     refresh.className='home-daily-refresh';
-    refresh.textContent='↻';
+    refresh.innerHTML=refreshSvg;
     var last=Number(localStorage.getItem('dailyMenuLastRefresh')||0);
     var remaining=Math.max(0,300000-(Date.now()-last));
     refresh.disabled=remaining>0;
@@ -203,7 +211,7 @@
     var now=Date.now();
     var fresh=list.filter(function(d){
       return d&&d.addedAt&&(now-Number(d.addedAt))<7*24*60*60*1000;
-    }).sort(function(a,b){return Number(b.addedAt)-Number(a.addedAt);});
+    }).sort(function(a,b){return Number(b.addedAt)-Number(a.addedAt);}).slice(0,5);
 
     var fragment=document.createDocumentFragment();
     if(fresh.length) fragment.appendChild(buildNewSection(fresh));
