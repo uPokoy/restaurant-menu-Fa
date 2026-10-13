@@ -7,8 +7,6 @@
   var plusSvg='<svg class="fa-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
   var cartSvg='<svg class="fa-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 9.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20 7H6"/><circle cx="10" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg>';
   var settingsSvg='<svg class="fa-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h7M15 7h5M4 17h4M12 17h8"/><circle cx="13" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>';
-  var observer=null;
-  var scheduled=false;
 
   function getCount(button){
     if(!button) return '';
@@ -20,7 +18,6 @@
   }
 
   function decorate(){
-    scheduled=false;
     var nav=document.querySelector('nav');
     if(!nav) return;
 
@@ -34,9 +31,7 @@
     if(cart){
       var count=getCount(cart);
       cart.classList.add('fa-nav-utility','fa-nav-cart');
-      if(!cart.querySelector('.fa-nav-icon')){
-        cart.innerHTML=cartSvg+(count?'<span class="cart-count">'+count+'</span>':'');
-      }
+      cart.innerHTML=cartSvg+(count?'<span class="cart-count">'+count+'</span>':'');
     }
 
     var settings=nav.querySelector('.settings-gear,button[title="Настройки"]');
@@ -46,23 +41,20 @@
     }
   }
 
-  function schedule(){
-    if(scheduled) return;
-    scheduled=true;
-    Promise.resolve().then(decorate);
+  function wrap(name,flag){
+    var current=window[name];
+    if(typeof current!=='function'||current[flag]) return;
+    var wrapped=function(){
+      var result=current.apply(this,arguments);
+      decorate();
+      return result;
+    };
+    wrapped[flag]=true;
+    window[name]=wrapped;
   }
 
-  function watch(){
-    var nav=document.querySelector('nav');
-    if(!nav) return;
-    if(observer) observer.disconnect();
-    observer=new MutationObserver(schedule);
-    observer.observe(nav,{childList:true,subtree:true,characterData:true});
-    decorate();
-  }
-
+  wrap('renderNav','__faNavPolishWrapped');
+  wrap('updateCartBadge','__faCartBadgePolishWrapped');
   decorate();
-  watch();
-  window.addEventListener('pageshow',function(){decorate();watch();});
-  window.setTimeout(function(){decorate();watch();},250);
+  window.addEventListener('pageshow',decorate);
 })();
