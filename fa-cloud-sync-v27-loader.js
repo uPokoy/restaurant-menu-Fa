@@ -17,16 +17,37 @@
       compact.href='fa-compact-card-v1.css?build=1.4';
       document.head.appendChild(compact);
     }
+    if(!document.getElementById('fa-wide-card-v1-css')){
+      var wide=document.createElement('link');
+      wide.id='fa-wide-card-v1-css';
+      wide.rel='stylesheet';
+      wide.href='fa-wide-card-v1.css?build=1.0';
+      document.head.appendChild(wide);
+    }
+  }
+
+  function loadWideCards(){
+    if(document.getElementById('fa-wide-card-v1-js')) return;
+    var w=document.createElement('script');
+    w.id='fa-wide-card-v1-js';
+    w.src='fa-wide-card-v1.js?build=1.0';
+    w.async=false;
+    w.onload=function(){console.info('[FA] Wide card refinements loaded')};
+    w.onerror=function(){console.warn('[FA] Wide card refinements failed to load')};
+    document.head.appendChild(w);
   }
 
   function loadRedesign(){
-    if(document.getElementById('fa-redesign-v3-js')) return;
+    if(document.getElementById('fa-redesign-v3-js')){
+      loadWideCards();
+      return;
+    }
     var r=document.createElement('script');
     r.id='fa-redesign-v3-js';
     r.src='fa-redesign-v3.js?build=1.7';
     r.async=false;
-    r.onload=function(){console.info('[FA] Redesign V3 loaded')};
-    r.onerror=function(){console.warn('[FA] Redesign V3 failed to load')};
+    r.onload=function(){console.info('[FA] Redesign V3 loaded');loadWideCards()};
+    r.onerror=function(){console.warn('[FA] Redesign V3 failed to load');loadWideCards()};
     document.head.appendChild(r);
   }
 
