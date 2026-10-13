@@ -5,6 +5,7 @@
   window.__FA_HOME_SECTIONS_V1__=true;
 
   var cartSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 9.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20 7H6"/><circle cx="10" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg>';
+  var navObserver=null;
 
   function getMenuPage(){
     return document.getElementById('menuPage');
@@ -14,13 +15,27 @@
     try{return Array.isArray(dishes)?dishes:[];}catch(e){return [];}
   }
 
+  function isSpecialNavButton(btn){
+    var text=String(btn&&btn.textContent||'').replace(/\s+/g,' ').trim();
+    text=text.replace(/^[^А-Яа-яA-Za-z0-9]+/,'').trim();
+    return text==='Новинки'||text==='Блюда дня'||text==='Блюдо дня';
+  }
+
   function stripSpecialNav(){
     var nav=document.querySelector('nav');
     if(!nav) return;
     Array.prototype.slice.call(nav.querySelectorAll('button')).forEach(function(btn){
-      var text=String(btn.textContent||'').replace(/\s+/g,' ').trim();
-      if(text==='Новинки'||text==='🍽️ Блюда дня'||text==='Блюда дня') btn.remove();
+      if(isSpecialNavButton(btn)) btn.remove();
     });
+  }
+
+  function watchNav(){
+    var nav=document.querySelector('nav');
+    if(!nav) return;
+    if(navObserver) navObserver.disconnect();
+    navObserver=new MutationObserver(function(){stripSpecialNav();});
+    navObserver.observe(nav,{childList:true,subtree:true,characterData:true});
+    stripSpecialNav();
   }
 
   function wrapBuildNav(){
@@ -30,6 +45,7 @@
       var wrapped=function(){
         var result=original.apply(this,arguments);
         stripSpecialNav();
+        watchNav();
         return result;
       };
       wrapped.__faHomeWrapped=true;
@@ -130,7 +146,10 @@
     var holder=document.createElement('div');
     holder.innerHTML=dailyCard(label,dish);
     var cardEl=holder.firstElementChild;
-    if(cardEl&&dish) compactifyCard(cardEl,dish);
+    if(cardEl){
+      cardEl.classList.add('home-daily-card');
+      if(dish) compactifyCard(cardEl,dish);
+    }
     return cardEl;
   }
 
@@ -205,6 +224,7 @@
           try{activeFilter=currentFilter;}catch(e){activeFilter='all';}
         }
         if(activeFilter==='all') renderHomeSections();
+        stripSpecialNav();
         return result;
       };
       wrapped.__faHomeWrapped=true;
@@ -216,6 +236,7 @@
 
   function init(){
     stripSpecialNav();
+    watchNav();
     wrapBuildNav();
     wrapDrawMenu();
     try{
@@ -225,6 +246,9 @@
     }catch(e){
       renderHomeSections();
     }
+    window.setTimeout(function(){stripSpecialNav();watchNav();},0);
+    window.setTimeout(stripSpecialNav,250);
+    window.setTimeout(stripSpecialNav,1000);
     console.info('[FA] Home sections ready');
   }
 
