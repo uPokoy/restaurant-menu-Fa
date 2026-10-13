@@ -42,18 +42,63 @@
     });
   }
 
-  function prepareCompactCard(card){
+  function validNutritionValue(value){
+    return value!=='' && value!==null && value!==undefined && Number.isFinite(Number(value));
+  }
+
+  function ensureNutrition(card,dish){
+    if(!card) return null;
+    var body=card.querySelector('.body');
+    if(!body) return null;
+
+    var nutrition=body.querySelector('.nutrition');
+    if(!nutrition){
+      nutrition=document.createElement('div');
+      nutrition.className='nutrition';
+      body.appendChild(nutrition);
+    }
+
+    var button=body.querySelector('.add-to-cart');
+    var n=dish&&dish.nutrition||{};
+    var values=[
+      ['Ккал',n.kcal,false],
+      ['Б',n.protein,true],
+      ['Ж',n.fat,true],
+      ['У',n.carbs,true]
+    ];
+
+    nutrition.innerHTML='';
+    values.forEach(function(item){
+      var span=document.createElement('span');
+      var present=validNutritionValue(item[1]);
+      span.textContent=item[0]+': '+(present?String(item[1])+(item[2]?' г':''):'—');
+      nutrition.appendChild(span);
+    });
+
+    if(button && button.classList.contains('compact-cart-button')){
+      nutrition.appendChild(button);
+    }
+    return nutrition;
+  }
+
+  function dishForCard(card,list){
+    if(!card||!Array.isArray(list)) return null;
+    var key=card.dataset.faDishKey;
+    if(!key) return null;
+    for(var i=0;i<list.length;i++){
+      if(list[i]&&String(list[i].id)===String(key)) return list[i];
+    }
+    return null;
+  }
+
+  function prepareCompactCard(card,dish){
     if(!card) return;
     var body=card.querySelector('.body');
     if(!body) return;
-    var name=body.querySelector('.name');
-    var nutrition=body.querySelector('.nutrition');
+    var nutrition=ensureNutrition(card,dish);
     var button=body.querySelector('.add-to-cart');
-    if(!name||!nutrition||!button) return;
+    if(!nutrition||!button) return;
 
-    if(name.nextElementSibling!==nutrition){
-      name.insertAdjacentElement('afterend',nutrition);
-    }
     if(button.parentElement!==nutrition){
       nutrition.appendChild(button);
     }
@@ -80,12 +125,12 @@
     body.appendChild(button);
   }
 
-  function prepareFeaturedCard(card){
+  function prepareFeaturedCard(card,dish){
     if(!card) return;
     var body=card.querySelector('.body');
     if(!body) return;
     var name=body.querySelector('.name');
-    var nutrition=body.querySelector('.nutrition');
+    var nutrition=ensureNutrition(card,dish);
     if(!name||!nutrition) return;
     if(name.nextElementSibling!==nutrition){
       name.insertAdjacentElement('afterend',nutrition);
@@ -154,11 +199,12 @@
     if(visualCards.length>=6) visualCards[5].classList.add('wide-card');
 
     visualCards.forEach(function(card){
+      var dish=dishForCard(card,list);
       if(!card.classList.contains('featured-card')&&!card.classList.contains('wide-card')){
-        prepareCompactCard(card);
+        prepareCompactCard(card,dish);
       }else{
         restoreNormalCard(card);
-        if(card.classList.contains('featured-card')) prepareFeaturedCard(card);
+        if(card.classList.contains('featured-card')) prepareFeaturedCard(card,dish);
       }
     });
 
