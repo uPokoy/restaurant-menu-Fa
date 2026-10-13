@@ -26,6 +26,17 @@
     });
   }
 
+  function styleCategories(){
+    document.querySelectorAll('#menuPage section h2').forEach(function(el){
+      el.style.setProperty('background','transparent','important');
+      el.style.setProperty('box-shadow','none','important');
+      el.style.setProperty('-webkit-backdrop-filter','none','important');
+      el.style.setProperty('backdrop-filter','none','important');
+      el.style.setProperty('color','#f4eee6','important');
+      el.style.setProperty('text-shadow','0 2px 8px rgba(0,0,0,.50)','important');
+    });
+  }
+
   function decorateSection(section){
     if(!section) return;
     var grid=section.querySelector('.grid');
@@ -80,6 +91,7 @@
 
   function decorateMenu(){
     document.querySelectorAll('#menuPage section').forEach(decorateSection);
+    styleCategories();
     cleanCartButtons(document);
   }
 
@@ -88,17 +100,19 @@
     var rect=card.getBoundingClientRect();
     var nav=document.querySelector('nav');
     var navH=nav?nav.getBoundingClientRect().height:0;
-    var available=Math.max(0,window.innerHeight-navH);
-    var target=window.scrollY+rect.top-navH+((available-rect.height)/2);
+    var visibleHeight=Math.max(1,window.innerHeight-navH);
+    var visibleCenter=navH+(visibleHeight/2);
+    var absoluteCardCenter=window.scrollY+rect.top+(rect.height/2);
+    var target=absoluteCardCenter-visibleCenter;
     var max=Math.max(0,document.documentElement.scrollHeight-window.innerHeight);
     target=Math.max(0,Math.min(target,max));
     window.scrollTo({top:target,behavior:'smooth'});
   }
 
   function scheduleCenter(card){
-    requestAnimationFrame(function(){
+    window.setTimeout(function(){
       requestAnimationFrame(function(){centerCard(card);});
-    });
+    },30);
   }
 
   function bindCentering(){
@@ -134,6 +148,9 @@
   }
 
   try{
+    if(typeof window.applyCategoryTransparency==='function'){
+      window.applyCategoryTransparency=styleCategories;
+    }
     wrapDrawMenu();
     decorateMenu();
     bindCentering();
