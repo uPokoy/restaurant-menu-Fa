@@ -190,7 +190,7 @@
     let visible=0;
     dishAdmin.querySelectorAll('.admin-item').forEach(item=>{
       const match=!query||String(item.textContent||'').toLocaleLowerCase('ru-RU').includes(query);
-      item.hidden=!match;
+      item.classList.toggle('fa-search-hidden',!match);
       if(match) visible++;
     });
     let empty=dishAdmin.querySelector('.dish-search-empty');
@@ -209,6 +209,26 @@
   function renameCancel(){
     const button=addPage.querySelector('button[onclick*="cancelEdit"]');
     if(button) button.textContent='Отменить';
+  }
+
+  function suppressDishNameSuggestions(){
+    const input=document.getElementById('fName');
+    if(!input) return;
+    input.setAttribute('autocomplete','off');
+    input.setAttribute('autocorrect','off');
+    input.setAttribute('spellcheck','false');
+    input.setAttribute('aria-autocomplete','none');
+    input.setAttribute('name','restaurant-dish-title');
+    input.setAttribute('data-form-type','other');
+    input.setAttribute('data-yandex-form-type','other');
+    input.setAttribute('data-lpignore','true');
+    input.setAttribute('data-1p-ignore','true');
+    input.setAttribute('data-bwignore','true');
+  }
+
+  function removePageHeading(){
+    const heading=Array.from(addPage.children).find(el=>el.tagName==='H2');
+    if(heading) heading.remove();
   }
 
   function wrapFunction(name,after){
@@ -234,6 +254,8 @@
   }
 
   function install(){
+    removePageHeading();
+    suppressDishNameSuggestions();
     moveCategoryForm();
     ensureSearch();
     renameCancel();
