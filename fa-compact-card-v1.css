@@ -43,23 +43,38 @@
   display:flex!important;
   align-items:center!important;
   flex-wrap:nowrap!important;
-  gap:7px!important;
+  gap:8px!important;
   width:100%!important;
   margin:auto 0 0!important;
   padding-top:12px!important;
   flex-shrink:0!important;
 }
-#menuPage .card:not(.featured-card):not(.wide-card).expanded .nutrition > span{
-  box-sizing:border-box!important;
-  flex:0 0 auto!important;
-  text-align:center!important;
+#menuPage .card:not(.featured-card):not(.wide-card).expanded .nutrition > .nutrition-pill{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  min-height:31px!important;
+  padding:0 12px!important;
+  border-radius:999px!important;
+  background:rgba(211,173,116,.08)!important;
+  color:#e5d5bf!important;
   white-space:nowrap!important;
+  box-sizing:border-box!important;
 }
-#menuPage .card:not(.featured-card):not(.wide-card).expanded .nutrition > span:nth-of-type(1){
-  width:58px!important;
-}
-#menuPage .card:not(.featured-card):not(.wide-card).expanded .nutrition > span:nth-of-type(n+2){
-  width:45px!important;
+#menuPage .card:not(.featured-card):not(.wide-card).expanded .nutrition > .nutrition-pill > span{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  margin:0!important;
+  min-width:0!important;
+  width:auto!important;
+  color:inherit!important;
+  white-space:nowrap!important;
+  text-align:left!important;
+  flex:0 0 auto!important;
 }
 
 /* The original add-to-cart button is moved after U and fills the same remaining width in every small card. */
@@ -67,10 +82,10 @@
   display:inline-flex!important;
   align-items:center!important;
   justify-content:center!important;
-  flex:1 1 auto!important;
-  width:auto!important;
-  min-width:58px!important;
-  max-width:none!important;
+  flex:0 0 84px!important;
+  width:84px!important;
+  min-width:84px!important;
+  max-width:84px!important;
   height:31px!important;
   min-height:31px!important;
   padding:0 10px!important;
@@ -129,8 +144,30 @@
   display:flex!important;
   align-items:center!important;
   flex-wrap:wrap!important;
-  gap:7px!important;
+  gap:8px!important;
   margin:9px 0 0!important;
+}
+#menuPage .card.featured-card.expanded .nutrition > .nutrition-pill{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  min-height:31px!important;
+  padding:0 12px!important;
+  border-radius:999px!important;
+  background:rgba(211,173,116,.08)!important;
+  color:#e5d5bf!important;
+  box-sizing:border-box!important;
+  white-space:nowrap!important;
+}
+#menuPage .card.featured-card.expanded .nutrition > .nutrition-pill > span{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  margin:0!important;
+  min-width:0!important;
+  width:auto!important;
+  color:inherit!important;
 }
 #menuPage .card.featured-card.expanded .desc{
   order:3!important;
@@ -142,9 +179,32 @@
   order:5!important;
 }
 
-/* Nutrition pills keep their fill but have no outline. */
-#menuPage .nutrition > span,
-.daily-card .nutrition > span{
-  border:none!important;
+/* One shared nutrition cloud for all card types. */
+#menuPage .nutrition > .nutrition-pill,
+.daily-card .nutrition > .nutrition-pill{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  min-height:31px!important;
+  padding:0 12px!important;
+  border:0!important;
+  border-radius:999px!important;
+  background:rgba(211,173,116,.08)!important;
+  color:#e5d5bf!important;
   box-shadow:none!important;
+  box-sizing:border-box!important;
+  white-space:nowrap!important;
+}
+#menuPage .nutrition > .nutrition-pill > span,
+.daily-card .nutrition > .nutrition-pill > span{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  margin:0!important;
+  min-width:0!important;
+  width:auto!important;
+  color:inherit!important;
+  white-space:nowrap!important;
 }

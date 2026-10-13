@@ -41,6 +41,19 @@
     });
   }
 
+  function groupExistingNutrition(root){
+    var scope=root||document;
+    scope.querySelectorAll('.nutrition').forEach(function(nutrition){
+      if(nutrition.querySelector(':scope > .nutrition-pill')) return;
+      var spans=Array.prototype.slice.call(nutrition.querySelectorAll(':scope > span'));
+      if(!spans.length) return;
+      var pill=document.createElement('div');
+      pill.className='nutrition-pill';
+      nutrition.insertBefore(pill,spans[0]);
+      spans.forEach(function(span){pill.appendChild(span);});
+    });
+  }
+
   function protectDishImages(root){
     var scope=root||document;
     scope.querySelectorAll('#menuPage .card img.photo,.daily-card img.photo').forEach(function(img){
@@ -81,12 +94,15 @@
     ];
 
     nutrition.innerHTML='';
+    var pill=document.createElement('div');
+    pill.className='nutrition-pill';
     values.forEach(function(item){
       var span=document.createElement('span');
       var present=validNutritionValue(item[1]);
       span.textContent=item[0]+': '+(present?String(item[1])+(item[2]?' г':''):'—');
-      nutrition.appendChild(span);
+      pill.appendChild(span);
     });
+    nutrition.appendChild(pill);
 
     if(button && button.classList.contains('compact-cart-button')){
       nutrition.appendChild(button);
@@ -223,6 +239,7 @@
 
     cleanCartButtons(grid);
     normalizeNutritionLabels(grid);
+    groupExistingNutrition(grid);
     protectDishImages(grid);
   }
 
@@ -231,6 +248,7 @@
     styleCategories();
     cleanCartButtons(document);
     normalizeNutritionLabels(document);
+    groupExistingNutrition(document);
     protectDishImages(document);
   }
 
