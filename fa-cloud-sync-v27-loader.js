@@ -38,16 +38,37 @@
       home.href='fa-home-sections-v1.css?build=1.2';
       document.head.appendChild(home);
     }
+    if(!document.getElementById('fa-home-polish-v1-css')){
+      var polish=document.createElement('link');
+      polish.id='fa-home-polish-v1-css';
+      polish.rel='stylesheet';
+      polish.href='fa-home-polish-v1.css?build=1.0';
+      document.head.appendChild(polish);
+    }
+  }
+
+  function loadNavPolish(){
+    if(document.getElementById('fa-nav-polish-v1-js')) return;
+    var n=document.createElement('script');
+    n.id='fa-nav-polish-v1-js';
+    n.src='fa-nav-polish-v1.js?build=1.0';
+    n.async=false;
+    n.onload=function(){console.info('[FA] Navigation polish loaded')};
+    n.onerror=function(){console.warn('[FA] Navigation polish failed to load')};
+    document.head.appendChild(n);
   }
 
   function loadHomeSections(){
-    if(document.getElementById('fa-home-sections-v1-js')) return;
+    if(document.getElementById('fa-home-sections-v1-js')){
+      loadNavPolish();
+      return;
+    }
     var h=document.createElement('script');
     h.id='fa-home-sections-v1-js';
     h.src='fa-home-sections-v1.js?build=1.2';
     h.async=false;
-    h.onload=function(){console.info('[FA] Home sections loaded')};
-    h.onerror=function(){console.warn('[FA] Home sections failed to load')};
+    h.onload=function(){console.info('[FA] Home sections loaded');loadNavPolish()};
+    h.onerror=function(){console.warn('[FA] Home sections failed to load');loadNavPolish()};
     document.head.appendChild(h);
   }
 
