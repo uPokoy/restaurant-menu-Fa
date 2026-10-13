@@ -31,6 +31,16 @@
     });
   }
 
+  function normalizeNutritionLabels(root){
+    var scope=root||document;
+    scope.querySelectorAll('.nutrition span').forEach(function(span){
+      var text=String(span.textContent||'');
+      if(text.indexOf('Ккал:')===0){
+        span.textContent='К:'+text.slice(5);
+      }
+    });
+  }
+
   function protectDishImages(root){
     var scope=root||document;
     scope.querySelectorAll('#menuPage .card img.photo,.daily-card img.photo').forEach(function(img){
@@ -64,7 +74,7 @@
     var button=body.querySelector('.add-to-cart');
     var n=dish&&dish.nutrition||{};
     var values=[
-      ['Ккал',n.kcal,false],
+      ['К',n.kcal,false],
       ['Б',n.protein,true],
       ['Ж',n.fat,true],
       ['У',n.carbs,true]
@@ -212,6 +222,7 @@
     });
 
     cleanCartButtons(grid);
+    normalizeNutritionLabels(grid);
     protectDishImages(grid);
   }
 
@@ -219,6 +230,7 @@
     document.querySelectorAll('#menuPage section').forEach(decorateSection);
     styleCategories();
     cleanCartButtons(document);
+    normalizeNutritionLabels(document);
     protectDishImages(document);
   }
 
