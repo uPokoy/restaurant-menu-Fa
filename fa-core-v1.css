@@ -55,8 +55,8 @@ textarea{min-height:90px;resize:vertical}
 .btn.primary{background:var(--navactive);color:var(--navactiveText);border-color:var(--navactive)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 
-.add-layout{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
-.add-card{padding:18px}
+.add-layout{display:grid;grid-template-columns:1fr;gap:18px;align-items:start}
+.add-card{padding:18px;width:100%}
 .add-card h3{margin-top:0}
 .add-full{grid-column:1/-1}
 .category-actions{display:flex;gap:8px;align-items:center}
@@ -106,7 +106,7 @@ details.collapsible-list>#catList,details.collapsible-list>#dishAdmin{padding:0 
 footer{position:relative;z-index:1}
 @media(max-width:760px){
   .nutrition-inputs{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .add-layout{grid-template-columns:1fr}.add-full{grid-column:auto}
+  .add-full{grid-column:auto}
   .category-actions{flex-direction:column;align-items:stretch}.category-actions .btn{width:100%}
 }
 @media(max-width:560px){
