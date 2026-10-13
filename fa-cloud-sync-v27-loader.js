@@ -7,7 +7,7 @@
     var link=document.createElement('link');
     link.id='fa-redesign-v3-css';
     link.rel='stylesheet';
-    link.href='fa-redesign-v3.css?build=1.0';
+    link.href='fa-redesign-v3.css?build=1.1';
     document.head.appendChild(link);
   }
 
@@ -15,7 +15,7 @@
     if(document.getElementById('fa-redesign-v3-js')) return;
     var r=document.createElement('script');
     r.id='fa-redesign-v3-js';
-    r.src='fa-redesign-v3.js?build=1.0';
+    r.src='fa-redesign-v3.js?build=1.1';
     r.async=false;
     r.onload=function(){console.info('[FA] Redesign V3 loaded')};
     r.onerror=function(){console.warn('[FA] Redesign V3 failed to load')};
