@@ -14,7 +14,7 @@
       var compact=document.createElement('link');
       compact.id='fa-compact-card-v1-css';
       compact.rel='stylesheet';
-      compact.href='fa-compact-card-v1.css?build=1.3';
+      compact.href='fa-compact-card-v1.css?build=1.4';
       document.head.appendChild(compact);
     }
   }
