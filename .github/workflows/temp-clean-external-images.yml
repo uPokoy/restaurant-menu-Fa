@@ -1,0 +1,97 @@
+name: Temporary image source cleanup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/temp-clean-external-images.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Replace external image sources
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          base = 'https://jrpialhwbliicbsmzmvb.supabase.co/storage/v1/object/public/menu-photos/'
+
+          dish_ids = list(range(1, 15)) + list(range(101, 114))
+          for dish_id in dish_ids:
+              pattern = re.compile(rf'(\{{id:{dish_id},[^\n]*?photo:)"[^"]*"')
+              s, count = pattern.subn(rf'\1"{base}optimized-v1/{dish_id}.jpg"', s, count=1)
+              if count != 1:
+                  raise SystemExit(f'Expected one photo field for dish {dish_id}, got {count}')
+
+          online_block = re.compile(
+              r'\n// Фотографии блюд\.\nconst ONLINE_PHOTOS=\{.*?\n\};\n\n'
+              r'// Подставляем найденные фотографии.*?localStorage\.setItem\("restaurantMenu",JSON\.stringify\(dishes\)\);\n\n',
+              re.S,
+          )
+          s, count = online_block.subn('\n', s, count=1)
+          if count != 1:
+              raise SystemExit(f'ONLINE_PHOTOS cleanup failed: {count}')
+
+          backgrounds = f'''const STANDARD_BACKGROUNDS=[
+           {{name:"Мрамор и золото",url:"{base}backgrounds/01"}},
+           {{name:"Тёплое кафе",url:"{base}backgrounds/02"}},
+           {{name:"Дерево и зелень",url:"{base}backgrounds/03"}},
+           {{name:"Чёрный премиум",url:"{base}backgrounds/04"}},
+           {{name:"Современный мрамор",url:"{base}backgrounds/05"}},
+           {{name:"Светлое дерево",url:"{base}backgrounds/06"}},
+           {{name:"Классический уют",url:"{base}backgrounds/07"}},
+           {{name:"Fine dining",url:"{base}backgrounds/08"}},
+           {{name:"Вечерний ресторан",url:"{base}backgrounds/09"}},
+           {{name:"Зелёный бархат",url:"{base}backgrounds/10"}}
+          ];
+          const LEGACY_BACKGROUND_HOSTS=[
+           "foshandecosupply.com","static.wixstatic.com","static-2.happynest.vn","myrise-inc.com","images.squarespace-cdn.com",
+           "karriere.zillerseasons.at","s0.rbk.ru","assets-global.website-files.com","static.designmynight.com","www.frizzmag.de"
+          ];
+          {{
+            const savedBackground=localStorage.getItem("restaurantMenuBackground")||"";
+            const legacyIndex=LEGACY_BACKGROUND_HOSTS.findIndex(host=>savedBackground.includes(host));
+            if(legacyIndex>=0) localStorage.setItem("restaurantMenuBackground",STANDARD_BACKGROUNDS[legacyIndex].url);
+          }}'''
+
+          bg_pattern = re.compile(r'const STANDARD_BACKGROUNDS=\[\n.*?\n\];', re.S)
+          s, count = bg_pattern.subn(backgrounds, s, count=1)
+          if count != 1:
+              raise SystemExit(f'Background block replacement failed: {count}')
+
+          old_hosts = [
+              'i.7fon.org','upload.wikimedia.org','www.yanina.it','prostokvashino.ru','nyamkin.ru','img.povar.ru',
+              'znatnakurka.ua','images.news.ru','img.iamcook.ru','images.gastronom.ru','www.sloosh.ru','img.delo-vcusa.ru',
+              'avatars.mds.yandex.net','vkusnoff.com','media.ovkuse.ru','static.1000.menu','make-eat.ru',
+              'foshandecosupply.com','static.wixstatic.com','static-2.happynest.vn','myrise-inc.com','images.squarespace-cdn.com',
+              'karriere.zillerseasons.at','s0.rbk.ru','assets-global.website-files.com','static.designmynight.com','www.frizzmag.de'
+          ]
+          for host in old_hosts:
+              if f'https://{host}' in s:
+                  raise SystemExit(f'Old external image URL remains: {host}')
+
+          if 'ONLINE_PHOTOS' in s:
+              raise SystemExit('ONLINE_PHOTOS block still present')
+
+          p.write_text(s, encoding='utf-8')
+          PY
+
+          git config user.name "uPokoy"
+          git config user.email "120357426+uPokoy@users.noreply.github.com"
+          git rm .github/workflows/temp-clean-external-images.yml
+          git add index.html
+          git diff --cached --check
+          git commit -m "Move built-in images to Supabase Storage"
+          git push origin HEAD:main
