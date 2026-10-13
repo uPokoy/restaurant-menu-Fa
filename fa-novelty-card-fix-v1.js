@@ -5,8 +5,6 @@
   window.__FA_NOVELTY_CARD_FIX_V1__=true;
 
   var cartSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 9.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20 7H6"/><circle cx="10" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg>';
-  var observer=null;
-  var scheduled=false;
 
   function valid(value){
     return value!==''&&value!==null&&value!==undefined&&Number.isFinite(Number(value));
@@ -74,10 +72,8 @@
     var button=body.querySelector('.add-to-cart');
     if(button){
       if(button.parentElement!==nutrition) nutrition.appendChild(button);
-      if(!button.classList.contains('compact-cart-button')||button.classList.contains('btn')||button.classList.contains('primary')){
-        button.classList.remove('btn','primary');
-        button.classList.add('compact-cart-button');
-      }
+      button.classList.remove('btn','primary');
+      button.classList.add('compact-cart-button');
       button.setAttribute('aria-label','Добавить в корзину');
       button.setAttribute('title','Добавить в корзину');
       if(!button.querySelector('svg')) button.innerHTML=cartSvg;
@@ -99,7 +95,7 @@
       if(button.parentElement===nutrition) body.appendChild(button);
       button.classList.remove('compact-cart-button');
       button.classList.add('btn','primary');
-      if(button.textContent!=='Добавить в корзину') button.textContent='Добавить в корзину';
+      button.textContent='Добавить в корзину';
       button.setAttribute('aria-label','Добавить в корзину');
       button.setAttribute('title','Добавить в корзину');
     }
@@ -107,28 +103,25 @@
   }
 
   function apply(){
-    scheduled=false;
     var section=document.querySelector('#menuPage .home-new-section');
     if(!section) return;
     section.querySelectorAll('.home-new-single,.home-new-pair,.home-new-small').forEach(makeCompact);
     section.querySelectorAll('.home-new-featured').forEach(makeFeatured);
   }
 
-  function schedule(){
-    if(scheduled) return;
-    scheduled=true;
-    requestAnimationFrame(apply);
+  function wrapDrawMenu(){
+    var current=window.drawMenu;
+    if(typeof current!=='function'||current.__faNoveltyFixWrapped) return;
+    var wrapped=function(){
+      var result=current.apply(this,arguments);
+      apply();
+      return result;
+    };
+    wrapped.__faNoveltyFixWrapped=true;
+    window.drawMenu=wrapped;
   }
 
-  function observe(){
-    var page=document.getElementById('menuPage');
-    if(!page) return;
-    if(observer) observer.disconnect();
-    observer=new MutationObserver(schedule);
-    observer.observe(page,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
-  }
-
+  wrapDrawMenu();
   apply();
-  observe();
-  window.addEventListener('pageshow',schedule);
+  window.addEventListener('pageshow',apply);
 })();
