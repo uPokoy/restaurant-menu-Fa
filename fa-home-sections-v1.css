@@ -15,49 +15,174 @@
   width:auto!important;
   margin:0!important;
 }
+
+/* Refresh is deliberately quiet: a small line icon, not a prominent action button. */
 #menuPage .home-daily-refresh{
-  flex:0 0 38px!important;
-  width:38px!important;
-  height:38px!important;
-  min-height:38px!important;
-  padding:0!important;
-  border:1px solid rgba(211,173,116,.28)!important;
-  border-radius:12px!important;
-  background:rgba(30,28,26,.84)!important;
-  color:#ead8bd!important;
-  font:700 22px/1 Arial,sans-serif!important;
+  flex:0 0 30px!important;
+  width:30px!important;
+  height:30px!important;
+  min-height:30px!important;
+  padding:6px!important;
+  border:1px solid rgba(211,173,116,.12)!important;
+  border-radius:10px!important;
+  background:rgba(28,26,24,.24)!important;
+  color:rgba(234,216,189,.52)!important;
   cursor:pointer!important;
-  box-shadow:0 3px 12px rgba(0,0,0,.18)!important;
+  box-shadow:none!important;
+  opacity:.66!important;
+  transition:opacity .16s ease,background .16s ease,border-color .16s ease!important;
+}
+#menuPage .home-daily-refresh svg{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:1.7!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+  pointer-events:none!important;
+}
+#menuPage .home-daily-refresh:hover:not(:disabled){
+  opacity:.9!important;
+  background:rgba(211,173,116,.08)!important;
+  border-color:rgba(211,173,116,.22)!important;
 }
 #menuPage .home-daily-refresh:disabled{
-  opacity:.38!important;
+  opacity:.24!important;
   cursor:default!important;
 }
 
-/* Новинки — обычные карточки, без принудительной большой/широкой карточки. */
+/* Новинки: максимум пять карточек. Геометрия зависит от их количества. */
+#menuPage .home-new-grid > .card{
+  position:relative!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+
 @media(min-width:901px){
-  #menuPage .home-new-grid{
-    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  /* Одна новинка — широкая карточка на всю строку. */
+  #menuPage .home-new-grid-count-1{
+    grid-template-columns:1fr!important;
     grid-auto-rows:278px!important;
   }
-  #menuPage .home-new-grid > .card{
+  #menuPage .home-new-grid-count-1 > .home-new-single{
+    grid-column:1 / -1!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr)!important;
+    height:278px!important;
+  }
+  #menuPage .home-new-grid-count-1 > .home-new-single:not(.expanded) .photo{
+    width:100%!important;
+    height:278px!important;
+  }
+  #menuPage .home-new-grid-count-1 > .home-new-single:not(.expanded) .body{
+    position:relative!important;
+    inset:auto!important;
+    width:auto!important;
+    height:278px!important;
+    min-height:0!important;
+    padding:18px 22px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    justify-content:center!important;
+    overflow:hidden!important;
+    background:var(--v3-card)!important;
+  }
+  #menuPage .home-new-grid-count-1 > .home-new-single:not(.expanded) .desc{
+    display:block!important;
+    margin-top:9px!important;
+    display:-webkit-box!important;
+    -webkit-box-orient:vertical!important;
+    -webkit-line-clamp:3!important;
+    overflow:hidden!important;
+  }
+  #menuPage .home-new-grid-count-1 > .home-new-single:not(.expanded) .ing,
+  #menuPage .home-new-grid-count-1 > .home-new-single:not(.expanded) .nutrition,
+  #menuPage .home-new-grid-count-1 > .home-new-single:not(.expanded) .add-to-cart{
+    display:none!important;
+  }
+
+  /* Две новинки — две одинаковые обычные карточки в одной строке. */
+  #menuPage .home-new-grid-count-2{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-auto-rows:278px!important;
+  }
+  #menuPage .home-new-grid-count-2 > .home-new-pair{
     grid-column:auto!important;
     grid-row:auto!important;
     height:278px!important;
-    min-height:0!important;
   }
-  #menuPage .home-new-grid > .card:not(.expanded) .photo{
+  #menuPage .home-new-grid-count-2 > .home-new-pair:not(.expanded) .photo{
     height:210px!important;
   }
-  #menuPage .home-new-grid > .card:not(.expanded) .body{
+  #menuPage .home-new-grid-count-2 > .home-new-pair:not(.expanded) .body{
     height:68px!important;
     min-height:68px!important;
     padding:12px 16px!important;
     display:flex!important;
     align-items:center!important;
   }
+
+  /* Три–пять новинок — та же мозаика: одна высокая + до четырёх маленьких. */
+  #menuPage .home-new-grid-count-3,
+  #menuPage .home-new-grid-count-4,
+  #menuPage .home-new-grid-count-5{
+    grid-template-columns:minmax(0,1.18fr) repeat(2,minmax(0,1fr))!important;
+    grid-auto-rows:278px!important;
+    grid-auto-flow:row!important;
+  }
+  #menuPage .home-new-grid-count-3 > .home-new-featured,
+  #menuPage .home-new-grid-count-4 > .home-new-featured,
+  #menuPage .home-new-grid-count-5 > .home-new-featured{
+    grid-column:1!important;
+    grid-row:1 / span 2!important;
+    height:572px!important;
+  }
+  #menuPage .home-new-grid-count-3 > .home-new-featured:not(.expanded) .photo,
+  #menuPage .home-new-grid-count-4 > .home-new-featured:not(.expanded) .photo,
+  #menuPage .home-new-grid-count-5 > .home-new-featured:not(.expanded) .photo{
+    height:504px!important;
+  }
+  #menuPage .home-new-grid-count-3 > .home-new-featured:not(.expanded) .body,
+  #menuPage .home-new-grid-count-4 > .home-new-featured:not(.expanded) .body,
+  #menuPage .home-new-grid-count-5 > .home-new-featured:not(.expanded) .body{
+    height:68px!important;
+    min-height:68px!important;
+    padding:12px 18px!important;
+    display:flex!important;
+    align-items:center!important;
+  }
+  #menuPage .home-new-grid-count-3 > .home-new-small,
+  #menuPage .home-new-grid-count-4 > .home-new-small,
+  #menuPage .home-new-grid-count-5 > .home-new-small{
+    grid-column:auto!important;
+    grid-row:auto!important;
+    height:278px!important;
+  }
+  #menuPage .home-new-grid-count-3 > .home-new-small:not(.expanded) .photo,
+  #menuPage .home-new-grid-count-4 > .home-new-small:not(.expanded) .photo,
+  #menuPage .home-new-grid-count-5 > .home-new-small:not(.expanded) .photo{
+    height:210px!important;
+  }
+  #menuPage .home-new-grid-count-3 > .home-new-small:not(.expanded) .body,
+  #menuPage .home-new-grid-count-4 > .home-new-small:not(.expanded) .body,
+  #menuPage .home-new-grid-count-5 > .home-new-small:not(.expanded) .body{
+    height:68px!important;
+    min-height:68px!important;
+    padding:12px 16px!important;
+    display:flex!important;
+    align-items:center!important;
+  }
+
+  /* Любая новинка раскрывается внутри своего текущего размера. */
   #menuPage .home-new-grid > .card.expanded .photo{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
     height:100%!important;
+    object-fit:cover!important;
     filter:brightness(.34)!important;
   }
   #menuPage .home-new-grid > .card.expanded .body{
@@ -233,6 +358,15 @@
   #menuPage .home-new-grid{
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
   }
+  #menuPage .home-new-grid-count-1{
+    grid-template-columns:1fr!important;
+  }
+  #menuPage .home-new-grid-count-3 > .home-new-featured,
+  #menuPage .home-new-grid-count-4 > .home-new-featured,
+  #menuPage .home-new-grid-count-5 > .home-new-featured{
+    grid-column:1 / -1!important;
+    grid-row:auto!important;
+  }
   #menuPage .home-daily-row{
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
   }
@@ -241,6 +375,29 @@
 @media(max-width:650px){
   #menuPage .home-new-grid{
     grid-template-columns:1fr!important;
+  }
+  #menuPage .home-new-grid > .card,
+  #menuPage .home-new-grid-count-3 > .home-new-featured,
+  #menuPage .home-new-grid-count-4 > .home-new-featured,
+  #menuPage .home-new-grid-count-5 > .home-new-featured{
+    grid-column:auto!important;
+    grid-row:auto!important;
+    height:auto!important;
+  }
+  #menuPage .home-new-grid-count-1 > .home-new-single{
+    display:block!important;
+    height:auto!important;
+  }
+  #menuPage .home-new-grid-count-1 > .home-new-single:not(.expanded) .photo{
+    height:215px!important;
+  }
+  #menuPage .home-new-grid-count-1 > .home-new-single:not(.expanded) .body{
+    height:auto!important;
+    min-height:0!important;
+    padding:12px 16px 13px!important;
+  }
+  #menuPage .home-new-grid-count-1 > .home-new-single:not(.expanded) .desc{
+    display:none!important;
   }
   #menuPage .home-daily-row{
     display:flex!important;
