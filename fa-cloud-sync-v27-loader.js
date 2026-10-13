@@ -23,7 +23,7 @@
     if(document.getElementById('fa-redesign-v3-js')) return;
     var r=document.createElement('script');
     r.id='fa-redesign-v3-js';
-    r.src='fa-redesign-v3.js?build=1.5';
+    r.src='fa-redesign-v3.js?build=1.6';
     r.async=false;
     r.onload=function(){console.info('[FA] Redesign V3 loaded')};
     r.onerror=function(){console.warn('[FA] Redesign V3 failed to load')};
