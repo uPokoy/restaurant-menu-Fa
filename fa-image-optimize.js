@@ -1,4 +1,4 @@
-/* FA_IMAGE_OPTIMIZE_V2 */
+/* FA_IMAGE_OPTIMIZE_V3 */
 (function(){
   'use strict';
 
@@ -62,6 +62,32 @@
     });
   }
 
+  function applyLoadingHints(root){
+    const base=root&&root.querySelectorAll?root:document;
+    base.querySelectorAll('img.photo, img.cart-thumb').forEach(img=>{
+      img.loading='lazy';
+      img.decoding='async';
+    });
+    if(root&&root.matches&&root.matches('img.photo, img.cart-thumb')){
+      root.loading='lazy';
+      root.decoding='async';
+    }
+  }
+
+  function installLoadingHints(){
+    if(window.__FA_IMAGE_LOADING_HINTS_INSTALLED) return;
+    window.__FA_IMAGE_LOADING_HINTS_INSTALLED=true;
+    applyLoadingHints(document);
+    const observer=new MutationObserver(mutations=>{
+      for(const mutation of mutations){
+        for(const node of mutation.addedNodes){
+          if(node&&node.nodeType===1) applyLoadingHints(node);
+        }
+      }
+    });
+    observer.observe(document.documentElement,{childList:true,subtree:true});
+  }
+
   function installDishOptimizer(){
     if(typeof window.saveDish!=='function') return false;
     if(window.__FA_DISH_IMAGE_OPTIMIZER_INSTALLED) return true;
@@ -119,6 +145,7 @@
   }
 
   function install(){
+    installLoadingHints();
     const dishReady=installDishOptimizer();
     const bgReady=installBackgroundOptimizer();
     if(!dishReady||!bgReady) setTimeout(install,200);
