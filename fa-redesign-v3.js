@@ -80,6 +80,18 @@
     body.appendChild(button);
   }
 
+  function prepareFeaturedCard(card){
+    if(!card) return;
+    var body=card.querySelector('.body');
+    if(!body) return;
+    var name=body.querySelector('.name');
+    var nutrition=body.querySelector('.nutrition');
+    if(!name||!nutrition) return;
+    if(name.nextElementSibling!==nutrition){
+      name.insertAdjacentElement('afterend',nutrition);
+    }
+  }
+
   function styleCategories(){
     document.querySelectorAll('#menuPage section h2').forEach(function(el){
       el.style.setProperty('background','transparent','important');
@@ -146,6 +158,7 @@
         prepareCompactCard(card);
       }else{
         restoreNormalCard(card);
+        if(card.classList.contains('featured-card')) prepareFeaturedCard(card);
       }
     });
 
