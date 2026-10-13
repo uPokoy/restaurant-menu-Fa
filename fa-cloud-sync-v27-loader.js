@@ -14,7 +14,7 @@
       var compact=document.createElement('link');
       compact.id='fa-compact-card-v1-css';
       compact.rel='stylesheet';
-      compact.href='fa-compact-card-v1.css?build=1.1';
+      compact.href='fa-compact-card-v1.css?build=1.2';
       document.head.appendChild(compact);
     }
   }
@@ -23,7 +23,7 @@
     if(document.getElementById('fa-redesign-v3-js')) return;
     var r=document.createElement('script');
     r.id='fa-redesign-v3-js';
-    r.src='fa-redesign-v3.js?build=1.3';
+    r.src='fa-redesign-v3.js?build=1.4';
     r.async=false;
     r.onload=function(){console.info('[FA] Redesign V3 loaded')};
     r.onerror=function(){console.warn('[FA] Redesign V3 failed to load')};
